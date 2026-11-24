@@ -187,7 +187,8 @@
     const lien = S.urlSure(ev.Lien);
     const contenu = `<p class="ag-fiche-quand"><b>${esc(quand(ev))}</b></p>
       <p><span class="ag-chip statique" style="--c:${couleur(ev)}"><span class="ag-pastille" aria-hidden="true"></span>${esc(nomSource(ev))}</span>
-        ${ev.Statut ? ` <span class="statut" data-etat="${esc(ev.Statut)}">${esc(ev.Statut)}</span>` : ''}</p>
+        ${ev.Statut ? ` <span class="statut" data-etat="${esc(ev.Statut)}">${esc(ev.Statut)}</span>` : ''}
+        ${ev.Diffusion === 'Interne' ? ' <span class="statut statut-non-commence" data-etat="interne">Interne : jamais diffusé</span>' : ''}</p>
       ${ev.Lieu ? `<p><span class="discret">Lieu :</span> ${esc(ev.Lieu)}</p>` : ''}
       ${d ? `<p><span class="discret">Dossier :</span> ${esc(d.Titre || d.Lien)}</p>` : ''}
       ${ev.Description ? `<div class="ag-fiche-desc">${texteMultiligne(ev.Description)}</div>` : ''}
@@ -237,6 +238,7 @@
       ${champ('f-dossier', 'Dossier législatif', `<select id="f-dossier"><option value="">Aucun</option>${dossiers.map(d => `<option value="${d.id}"${ev && ev.Dossier === d.id ? ' selected' : ''}>${esc(d.Titre || d.Lien)}</option>`).join('')}</select>`, { large: true })}
       ${champ('f-notes', 'Notes internes', `<textarea id="f-notes" rows="3">${esc(ev ? ev.Notes : '')}</textarea>`, { large: true })}
       <label class="ag-case"><input id="f-annule" type="checkbox"${ev && ev.Statut === 'Annulé' ? ' checked' : ''}> Annulé (reste visible, barré)</label>
+      <label class="ag-case"><input id="f-interne" type="checkbox"${ev && ev.Diffusion === 'Interne' ? ' checked' : ''}> Interne : ne jamais diffuser dans les agendas extérieurs</label>
     </div>`;
   }
   function erreur(id, texte) {
@@ -282,7 +284,7 @@
     const statut = coche('f-annule') ? 'Annulé' : (ev && ev.Statut === S.STATUT_RETIRE ? ev.Statut : null);
     return {
       Titre: titre, Debut, Fin, Journee_entiere: journee, Lieu: v('f-lieu').trim(), Description: v('f-desc').trim(), Lien,
-      Dossier: Number(v('f-dossier')) || null, Notes: v('f-notes').trim(), Statut: statut,
+      Dossier: Number(v('f-dossier')) || null, Notes: v('f-notes').trim(), Statut: statut, Diffusion: coche('f-interne') ? 'Interne' : null,
     };
   }
   async function editer(ev, k) {

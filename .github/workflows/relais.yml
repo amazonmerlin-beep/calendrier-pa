@@ -26,3 +26,5 @@ jobs:
           GRIST_URL: ${{ vars.GRIST_URL }}
           GRIST_DOC: ${{ secrets.GRIST_DOC }}
           GRIST_API_KEY: ${{ secrets.GRIST_API_KEY }}
+          # Jeton GitHub limité aux gists (publication des abonnements de consultation)
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}

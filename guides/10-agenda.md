@@ -17,6 +17,7 @@ Un clic sur un événement ouvre sa fiche : date, lieu, description, lien vers l
 - **Nouvel événement**, ou **Ajouter** dans la colonne d’un jour.
 - Dans la fiche d’un événement : **Modifier** ou **Supprimer**.
 - **Notes internes** : vos remarques (qui y va, quoi préparer). La synchronisation ne les touche jamais.
+- **Interne : ne jamais diffuser** : l’événement n’apparaît dans aucun agenda extérieur abonné (voir « Diffusion »), quels que soient les choix de l’abonnement.
 
 Les événements du Sénat arrivent seuls. Vous pouvez les corriger (le Sénat ne publie pas l’heure de fin, par exemple) : votre correction est gardée tant que le Sénat ne modifie pas l’événement.
 
@@ -52,3 +53,17 @@ Onglet **Sources et imports**, **S’abonner à un agenda Google ou Outlook** : 
 - Outlook : paramètres du calendrier, « Calendriers partagés », **publier un calendrier**, lien ICS.
 
 Prenez de préférence un agenda dédié à l’équipe : tout son contenu entre dans le Calendrier PA. L’adresse n’est lisible que par l’administration. Le relais lit l’agenda à son passage suivant, puis toutes les deux heures. Pour arrêter, décochez l’agenda dans **Agendas suivis**.
+
+## Diffuser vers des agendas extérieurs (administration)
+
+Onglet **Diffusion** : un abonnement publie une partie du Calendrier PA à une adresse secrète, que des personnes extérieures ajoutent à leur Google Agenda (« Autres agendas », +, « À partir de l’URL ») ou à Outlook (« Ajouter un calendrier », « S’abonner à partir du web »). Elles le voient en lecture seule.
+
+Pour chaque abonnement, on choisit :
+
+- les **agendas inclus** (séance publique, commission des lois, saisies de l’équipe…) et les **dossiers inclus** (tous leurs événements, quel que soit l’agenda) ;
+- le **niveau de détail** : titres et horaires ; avec lieu, description et lien ; ou avec les notes internes de l’équipe ;
+- la diffusion des événements annulés.
+
+L’aperçu dit aussitôt combien d’événements partiraient. **Publier** demande confirmation ; le relais publie à son passage suivant (dans les deux heures) et l’adresse apparaît alors dans l’abonnement. Ensuite, chaque passage met l’agenda publié à jour ; Google peut mettre jusqu’à 24 h à afficher un changement. **Arrêter la publication** rend l’adresse inutilisable au passage suivant ; une nouvelle publication donne une nouvelle adresse.
+
+Toute personne qui a l’adresse voit ce qui est diffusé : ne la donnez qu’aux personnes concernées, et marquez « Interne » ce qui ne doit jamais sortir.

@@ -49,7 +49,24 @@ n'a pas le droit de lire. Tout ce qui est lisible depuis un navigateur se fait s
 | `Evenements` | Titre, début, fin, journée entière, lieu, description, lien, **notes internes** (jamais touchées par la synchronisation), statut (annulé, retiré de la source), source, dossier, `UID` (identifiant iCal : pas de doublon), `Empreinte` (état de la source à la dernière lecture), créé et modifié par / le (déclencheurs `user.Email`) |
 | `Sources` | 25 instances du Sénat, la source « Assemblée nationale (dossiers suivis) », les imports, la saisie ; suivie ou non, couleur, résultat et verrou de la synchronisation, contenu relayé |
 | `Dossiers` | Lien collé, assemblée (calculée), titre, état du suivi, textes repérés, calendrier annoncé, lien vers l'autre assemblée, prochaine date et nombre d'événements (calculés) |
+| `Abonnements` | Diffusion : nom, agendas et dossiers inclus, niveau de détail, annulés, publié ou non ; adresse et gist écrits par le relais |
 | `Parametres`, `Annuaire`, `Connexions`, `Guides` | Socle du kit : réglages, comptes et rôles, identité dans le module, onglet Aide |
+
+## Diffusion vers des agendas extérieurs (`module/src/diffusion.js`, onglet Diffusion)
+
+Un **abonnement** publie une partie du calendrier à une adresse secrète, ajoutée en lecture seule dans Google Agenda
+ou Outlook. Deux niveaux de sélection :
+
+1. **Par abonnement** : agendas inclus, dossiers inclus (tous leurs événements), niveau de détail (titres et
+   horaires ; + lieu, description, lien, dossier ; + notes internes), annulés ou non, deux mois en arrière.
+2. **Par événement** : « Interne » exclut l'événement de toute diffusion.
+
+La sélection et l'iCal sont des fonctions pures partagées : l'aperçu du module (« 12 événements diffusés, du … au
+… ») est exactement ce que le relais publie. Publication dans un **gist secret** GitHub (le dépôt étant public, ni
+lui ni ses pages ne peuvent héberger un flux privé ; les artefacts d'Actions d'un dépôt public sont téléchargeables
+par tous) ; arrêt = gist supprimé. Contenu stable d'un passage à l'autre (horodatage = dernière modification de
+l'événement). Abonnements lisibles et modifiables par l'administration seulement ; publication confirmée par un
+récapitulatif. Limite : Google relit un agenda abonné à son rythme (jusqu'à 24 h).
 
 ## Règles de synchronisation (`module/src/sync.js`, fonctions pures testées)
 
@@ -102,8 +119,8 @@ n'a pas le droit de lire. Tout ce qui est lisible depuis un navigateur se fait s
    `organeReuniRef` → nom passe par l'open data des organes (à ajouter).
 5. **Synchronisation à l'ouverture** : sans visite, l'agenda du Sénat n'est pas relu (le relais, lui, tourne
    seul). Piste : faire aussi lire le Sénat par le relais si l'équipe veut un agenda à jour sans visite.
-6. **Abonnement sortant** (voir le Calendrier PA dans son Google ou son Outlook) : un flux iCal publié par le
-   relais (GitHub Pages ou dépôt privé) ; à cadrer (confidentialité des notes).
+6. **Diffusion** : en place (abonnements, gists secrets). Google relit un agenda abonné à son rythme (jusqu'à 24 h) :
+   ce n'est pas un outil d'alerte.
 
 ## Fichiers
 
@@ -112,9 +129,11 @@ n'a pas le droit de lire. Tout ce qui est lisible depuis un navigateur se fait s
 | `projet.config.js`, `schema/` | Réglages, modèle, sources de départ, règles d'accès |
 | `module/src/` | Module : socle du kit (`core`, `app`, `fiche`, `markdown`, `vue-aide`, `ui.css`) + `sync.js` (moteur), `synchro.js` (orchestration), `vue-agenda.js`, `vue-dossiers.js`, `vue-sources.js`, `agenda.css` |
 | `relais/` | Relais GitHub (`relais.mjs`, `LISEZMOI.md`) ; `.github/workflows/relais.yml` |
+| `outils/migrer.js` | Met un document existant au niveau du schéma (tables et colonnes manquantes, règles), sans rien perdre |
 | `guides/` | Onglet Aide |
 | `tests/fixtures/` | Flux réels du Sénat, invitation Outlook, export Google, page de dossier |
 | `tests-e2e/` | Parcours, relais, accessibilité, zoom, captures |
 
 Commandes : `npm ci`, `npm run grist:demarrer` (Docker), `npm run construire`, `npm run deployer`, puis les
-tests ci-dessus ; `npm run livrer` pour le `.grist`.
+tests ci-dessus (et `npm run test:diffusion`) ; `npm run livrer` pour le `.grist` ; `npm run migrer` pour faire
+évoluer un document qui a des données.

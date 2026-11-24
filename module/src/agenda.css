@@ -96,3 +96,13 @@
   .ag-jour.vide { display: none; }
   .ag-ajout { opacity: 1; }
 }
+
+/* Diffusion : cases groupées, niveaux, adresse publiée */
+.ag-cases { border: 1px solid var(--c-bordure); border-radius: 6px; padding: 8px 12px 10px; margin: 0 0 10px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4px 16px; }
+.ag-cases legend, .ag-niveaux legend { font-weight: 600; font-size: 14px; padding: 0 4px; }
+.ag-niveaux { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.ag-adresse { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.ag-adresse label { font-weight: 600; }
+.ag-adresse input { width: 100%; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); padding: 6px 8px; min-height: 34px;
+  background: var(--c-fond-alt); font-family: var(--police); font-size: 13px; }

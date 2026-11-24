@@ -17,7 +17,7 @@ module.exports = {
   // Onglets du module par rôle : [identifiant de vue, libellé] ; le premier s'ouvre par défaut
   onglets: {
     membre: [['agenda', 'Agenda'], ['dossiers', 'Dossiers suivis'], ['sources', 'Sources et imports'], ['aide', 'Aide']],
-    admin: [['agenda', 'Agenda'], ['dossiers', 'Dossiers suivis'], ['sources', 'Sources et imports'], ['aide', 'Aide']],
+    admin: [['agenda', 'Agenda'], ['dossiers', 'Dossiers suivis'], ['sources', 'Sources et imports'], ['diffusion', 'Diffusion'], ['aide', 'Aide']],
   },
   guidesEnFin: ['confidentialite'],
   // Veille : les événements ajoutés par les autres (ou par la synchronisation d'un autre poste) apparaissent
@@ -31,7 +31,7 @@ module.exports = {
     },
   },
   // Tables que le module lit (une table fermée par les règles est lue comme vide)
-  tablesModule: ['Parametres', 'Connexions', 'Guides', 'Sources', 'Evenements', 'Dossiers'],
+  tablesModule: ['Parametres', 'Connexions', 'Guides', 'Sources', 'Evenements', 'Dossiers', 'Abonnements'],
   // Après une écriture dans une table, le module relit aussi celles dont les formules en dépendent
   dependances: { Evenements: ['Dossiers', 'Sources'], Dossiers: ['Evenements'] },
   // Comptes de test du Grist local : [adresse, nom, rôle, entité]

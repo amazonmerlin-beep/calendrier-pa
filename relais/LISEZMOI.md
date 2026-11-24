@@ -21,6 +21,13 @@ lui-même : une seule logique de synchronisation, celle du module.
    Contrairement au Sénat, l'Assemblée publie l'heure de fin réelle.
 2. **Agendas Google ou Outlook** : pour chaque source de type « Flux via relais », suivie, avec une adresse
    iCal, il télécharge l'agenda et le dépose tel quel. L'adresse n'apparaît jamais dans le journal.
+3. **Abonnements de consultation** (onglet Diffusion, table `Abonnements`) : il sélectionne les événements choisis
+   (même code que l'aperçu du module, `module/src/diffusion.js`), écrit l'agenda iCal et le publie dans un **gist
+   secret** GitHub (non répertorié : seule l'adresse y donne accès), dont l'adresse est notée dans l'abonnement. Un
+   abonnement arrêté voit son gist supprimé. Le dépôt et ses pages ne servent pas : public, il exposerait tout.
+
+Le journal d'exécution (public si le dépôt l'est) ne contient ni nom, ni adresse, ni identifiant : des numéros et
+des nombres seulement.
 
 ## Installer (une fois)
 
@@ -35,6 +42,9 @@ lui-même : une seule logique de synchronisation, celle du module.
    - variable `GRIST_URL` : `https://docs.getgrist.com` ;
    - secret `GRIST_DOC` : l'identifiant du document (*Paramètres du document* → identifiant) ; en secret pour
      qu'il soit masqué dans les journaux, publics si le dépôt l'est.
+   - secret `GIST_TOKEN` (pour la diffusion) : un jeton GitHub **à grain fin** (*Settings → Developer settings →
+     Fine-grained tokens*), sans accès aux dépôts, avec la seule permission de compte **Gists : lecture et
+     écriture**, et une date d'expiration. Sans lui, les abonnements restent « à vérifier ».
 4. *Actions → Relais Calendrier PA → Run workflow* pour un premier passage ; ensuite, il tourne seul.
 
 ## Ajouter un agenda Google ou Outlook

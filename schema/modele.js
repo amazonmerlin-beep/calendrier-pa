@@ -16,6 +16,9 @@ const GROUPES = ['Sénat – Séance publique', 'Sénat – Commissions', 'Séna
 const STATUTS_EVT = ['Annulé', 'Retiré de la source'];
 const ETATS_DOSSIER = ['À analyser', 'Suivi actif', 'En attente du relais', 'Erreur'];
 const SYNC_AUTEUR = 'Synchronisation automatique';
+// Diffusion vers des agendas extérieurs : niveau de détail d'un abonnement, et exclusion d'un événement
+const NIVEAUX_DIFFUSION = ['Titres et horaires', 'Avec lieu et description', 'Avec notes internes'];
+const DIFFUSION_EVT = ['Interne'];
 
 const TABLES = [
   {
@@ -113,6 +116,8 @@ const TABLES = [
       // Origine par défaut : saisie dans l'agenda (la synchronisation et l'import fournissent la leur)
       { id: 'Source', type: 'Ref:Sources', label: 'Source', formule: 'Sources.lookupOne(Type="Saisie manuelle")', declencheur: 'ajout' },
       { id: 'Dossier', type: 'Ref:Dossiers', label: 'Dossier législatif' },
+      { id: 'Diffusion', type: 'Choice', label: 'Diffusion', options: { choices: DIFFUSION_EVT },
+        description: 'Vide : diffusé dans les abonnements qui incluent son agenda ou son dossier. « Interne » : jamais diffusé.' },
       { id: 'UID', type: 'Text', label: 'Identifiant externe',
         description: 'Identifiant de l’événement dans sa source (UID iCal) : évite les doublons.' },
       { id: 'Empreinte', type: 'Text', label: 'Empreinte de la source',
@@ -121,6 +126,25 @@ const TABLES = [
       { id: 'Cree_le', type: TZ, label: 'Créé le', formule: 'NOW()', declencheur: 'ajout', options: DATETIME },
       { id: 'Modifie_par', type: 'Text', label: 'Modifié par', formule: 'user.Email', declencheur: 'modif' },
       { id: 'Modifie_le', type: TZ, label: 'Modifié le', formule: 'NOW()', declencheur: 'modif', options: DATETIME },
+    ],
+  },
+  {
+    // Abonnements de consultation : un agenda iCal, choisi (agendas, dossiers, niveau de détail), publié par le relais
+    // à une adresse secrète que des personnes extérieures ajoutent à leur Google Agenda ou à Outlook.
+    id: 'Abonnements',
+    colonnes: [
+      { id: 'Nom', type: 'Text', label: 'Nom' },
+      { id: 'Actif', type: 'Bool', label: 'Publié', options: { widget: 'Switch' } },
+      { id: 'Sources', type: 'RefList:Sources', label: 'Agendas inclus' },
+      { id: 'Dossiers', type: 'RefList:Dossiers', label: 'Dossiers inclus' },
+      { id: 'Niveau', type: 'Choice', label: 'Niveau de détail', options: { choices: NIVEAUX_DIFFUSION } },
+      { id: 'Annules', type: 'Bool', label: 'Avec les annulés', options: { widget: 'Switch' } },
+      { id: 'Gist', type: 'Text', label: 'Publication (technique)', description: 'Identifiant du gist secret qui porte l’agenda publié. Écrit par le relais.' },
+      { id: 'Adresse', type: 'Text', label: 'Adresse d’abonnement', options: { widget: 'HyperLink' }, description: 'Écrite par le relais à la première publication.' },
+      { id: 'Publie_le', type: TZ, label: 'Publié le', options: DATETIME },
+      { id: 'Resultat', type: 'Text', label: 'Résultat', options: { wrap: true } },
+      { id: 'Cree_par', type: 'Text', label: 'Créé par', formule: 'user.Email', declencheur: 'ajout' },
+      { id: 'Cree_le', type: TZ, label: 'Créé le', formule: 'NOW()', declencheur: 'ajout', options: DATETIME },
     ],
   },
   {
@@ -150,4 +174,4 @@ const PARAMETRES = [
 // Données de base, posées à la construction (avant les déclencheurs)
 const DONNEES = { Sources: SOURCES };
 
-module.exports = { TABLES, PARAMETRES, DONNEES, ROLES, TYPES_SOURCE, STATUTS_EVT, ETATS_DOSSIER, SYNC_AUTEUR };
+module.exports = { TABLES, PARAMETRES, DONNEES, ROLES, TYPES_SOURCE, STATUTS_EVT, ETATS_DOSSIER, SYNC_AUTEUR, NIVEAUX_DIFFUSION, DIFFUSION_EVT };

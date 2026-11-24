@@ -10,7 +10,7 @@ const PROPRIO = 'user.Access in [OWNER]';
 const ROLE = 'user.Moi.Role_effectif';
 const CONNU = `${ROLE} in ["membre", "admin"]`;
 const ADMIN = `${ROLE} == "admin"`;
-const { SYNC_AUTEUR, STATUTS_EVT, ETATS_DOSSIER } = require('./modele');
+const { SYNC_AUTEUR, STATUTS_EVT, ETATS_DOSSIER, DIFFUSION_EVT, NIVEAUX_DIFFUSION } = require('./modele');
 const ATTRIBUT_MOI = { name: 'Moi', tableId: 'Annuaire', lookupColId: 'Email', charId: 'Email' };
 
 function jeux() {
@@ -106,9 +106,25 @@ function jeux() {
       regles: [
         [PROPRIO, '+CRUD'],
         [`${CONNU} and newRec.Statut not in [None, "", ${STATUTS_EVT.map(x => `"${x}"`).join(', ')}]`, '-CU', 'Statut : valeurs de la liste seulement'],
+        [`${CONNU} and newRec.Diffusion not in [None, "", ${DIFFUSION_EVT.map(x => `"${x}"`).join(', ')}]`, '-CU', 'Diffusion : valeurs de la liste seulement'],
         [`${CONNU} and (newRec.Cree_par == user.Email or (newRec.Cree_par == "${SYNC_AUTEUR}" and newRec.UID))`, '+C',
           'Membres : créent un événement en leur nom ; la synchronisation, un événement venu d’une source'],
         [CONNU, '+RUD', 'Membres : alimentent l’agenda'],
+        ['', '-CRUD'],
+      ],
+    },
+    // Abonnements de consultation : administration seulement (les adresses publiées sont des secrets)
+    {
+      table: 'Abonnements', colonnes: 'Cree_par,Cree_le',
+      regles: [[PROPRIO, '+RU'], ['', '-U', 'Colonnes système : jamais modifiées à la main']],
+    },
+    {
+      table: 'Abonnements', colonnes: '*',
+      regles: [
+        [PROPRIO, '+CRUD'],
+        [`${ADMIN} and newRec.Niveau not in [None, "", ${NIVEAUX_DIFFUSION.map(x => `"${x}"`).join(', ')}]`, '-CU', 'Niveau de détail : valeurs de la liste seulement'],
+        [`${ADMIN} and newRec.Cree_par == user.Email`, '+C', 'Admin : crée un abonnement en son nom'],
+        [ADMIN, '+RUD', 'Admin : gère les abonnements (le relais publie sous un compte admin)'],
         ['', '-CRUD'],
       ],
     },

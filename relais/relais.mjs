@@ -3,12 +3,17 @@
 //  1. Assemblée nationale : réunions et séances des dossiers suivis (open data quotidien de l'Assemblée,
 //     Agenda.json.zip), écrites en iCal dans la source « Assemblée nationale (dossiers suivis) ».
 //  2. Agendas Google ou Outlook (sources de type « Flux via relais » avec une adresse) : contenu iCal relayé tel quel.
-// Le module Grist intègre ensuite ces contenus comme n'importe quel flux (synchro.js).
+//  3. Abonnements de consultation (table Abonnements) : l'agenda choisi est publié dans un gist secret GitHub, dont
+//     l'adresse est notée dans Grist ; un abonnement arrêté voit son gist supprimé.
+// Le module Grist intègre les contenus relayés comme n'importe quel flux (synchro.js). Les journaux d'exécution
+// (publics si le dépôt l'est) ne contiennent ni nom, ni adresse, ni identifiant : seulement des numéros et des nombres.
 //
 // Node 20 ou plus, sans dépendance ; `unzip` doit être installé (présent sur les machines de GitHub Actions).
 // Variables : GRIST_URL (ex. https://docs.getgrist.com), GRIST_DOC (identifiant du document),
 //   GRIST_API_KEY (clé d'un compte « robot » inscrit dans l'annuaire avec le rôle Administration),
-//   AN_AGENDA_ZIP (facultatif : fichier déjà téléchargé, pour les essais), RELAIS_SIMULATION=1 (n'écrit rien).
+//   GIST_TOKEN (jeton GitHub limité aux gists : publication des abonnements ; sans lui, rien n'est publié),
+//   AN_AGENDA_ZIP (facultatif : fichier déjà téléchargé, pour les essais), RELAIS_SIMULATION=1 (n'écrit rien),
+//   GIST_API, GIST_RAW (facultatifs : autre serveur que GitHub, pour les essais).
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -22,6 +27,13 @@ const AN_AGENDA = 'https://data.assemblee-nationale.fr/static/openData/repositor
 const SOURCE_AN = 'Assemblée nationale (dossiers suivis)';
 const UA = 'calendrier-pa-relais/1.0 (+https://github.com)';
 const MAX_ICS = 2 * 1024 * 1024;   // un contenu relayé de plus de 2 Mo est refusé (cellule Grist raisonnable)
+const GIST_TOKEN = process.env.GIST_TOKEN || '';
+const GIST_API = (process.env.GIST_API || 'https://api.github.com').replace(/\/$/, '');
+const GIST_RAW = (process.env.GIST_RAW || 'https://gist.githubusercontent.com').replace(/\/$/, '');
+const GIST_FICHIER = 'calendrier-pa.ics';
+// Sélection et agenda iCal des abonnements : le même code que l'aperçu du module
+await import(new URL('../module/src/diffusion.js', import.meta.url));
+const D = globalThis.Formulaire.diffusion;
 
 if (!GRIST_URL || !DOC || !CLE) { console.error('GRIST_URL, GRIST_DOC et GRIST_API_KEY sont requis.'); process.exit(2); }
 
@@ -199,11 +211,60 @@ async function relayerAgendas(sources) {
       if (!/BEGIN:VCALENDAR/.test(texte)) throw new Error('ce n’est pas un agenda iCal');
       if (texte.length > MAX_ICS) throw new Error('agenda trop gros (plus de 2 Mo) : utilisez un agenda dédié');
       await modifier('Sources', [{ id: s.id, fields: { Contenu_relaye: texte, Relaye_le: maintenant() } }]);
-      console.log(`${s.Nom} : ${(texte.match(/BEGIN:VEVENT/g) || []).length} événements relayés.`);
+      console.log(`Source n° ${s.id} : ${(texte.match(/BEGIN:VEVENT/g) || []).length} événements relayés.`);
     } catch (e) {
       // L'adresse n'est jamais écrite dans le journal : c'est souvent un lien secret
       await modifier('Sources', [{ id: s.id, fields: { Resultat_synchro: '⚠ Relais : ' + e.message, Relaye_le: maintenant() } }]);
-      console.error(`${s.Nom} : ${e.message}`);
+      console.error(`Source n° ${s.id} : ${e.message}`);
+    }
+  }
+}
+
+// ------------------------------------------------------------------ abonnements de consultation (gists secrets)
+async function gist(methode, chemin, corps) {
+  const r = await fetch(`${GIST_API}${chemin}`, {
+    method: methode,
+    headers: { Authorization: `Bearer ${GIST_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': UA, 'Content-Type': 'application/json' },
+    body: corps ? JSON.stringify(corps) : undefined,
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`GitHub ${methode} : erreur ${r.status}`);
+  return r.status === 204 ? {} : r.json();
+}
+const adresseGist = g => `${GIST_RAW}/${g.owner.login}/${g.id}/raw/${GIST_FICHIER}`;
+
+async function publierAbonnements(sources, dossiers) {
+  let abonnements;
+  try { abonnements = await lignes('Abonnements'); } catch (e) { console.log('Pas de table Abonnements : diffusion ignorée.'); return; }
+  if (!abonnements.length) return;
+  const evts = await lignes('Evenements');
+  const noms = { sources: new Map(sources.map(x => [x.id, x.Nom])), dossiers: new Map(dossiers.map(x => [x.id, x.Titre || x.Lien])) };
+  for (const a of abonnements) {
+    try {
+      if (!a.Actif) {
+        if (!a.Gist) continue;
+        if (!GIST_TOKEN) throw new Error('jeton GitHub GIST_TOKEN absent : l’adresse n’a pas pu être supprimée');
+        if (!SIMULATION) await gist('DELETE', `/gists/${a.Gist}`);
+        await modifier('Abonnements', [{ id: a.id, fields: { Gist: '', Adresse: '', Publie_le: maintenant(), Resultat: 'Publication arrêtée : l’adresse ne fonctionne plus.' } }]);
+        console.log(`Abonnement n° ${a.id} : publication arrêtée.`);
+        continue;
+      }
+      if (!GIST_TOKEN) throw new Error('publication impossible : le jeton GitHub GIST_TOKEN n’est pas configuré dans le dépôt du relais');
+      const choisis = D.selectionner(evts, a, maintenant());
+      const contenu = D.versIcs(a, choisis, noms);
+      const fichiers = { [GIST_FICHIER]: { content: contenu } };
+      let g = null;
+      if (!SIMULATION) {
+        if (a.Gist) g = await gist('PATCH', `/gists/${a.Gist}`, { files: fichiers });
+        if (!g) g = await gist('POST', '/gists', { description: 'Calendrier PA (abonnement)', public: false, files: fichiers });
+      }
+      const f = { Publie_le: maintenant(), Resultat: `${choisis.length} événement${choisis.length > 1 ? 's' : ''} publié${choisis.length > 1 ? 's' : ''}.` };
+      if (g) { f.Gist = g.id; f.Adresse = adresseGist(g); }
+      await modifier('Abonnements', [{ id: a.id, fields: f }]);
+      console.log(`Abonnement n° ${a.id} : ${choisis.length} événements publiés.`);
+    } catch (e) {
+      await modifier('Abonnements', [{ id: a.id, fields: { Publie_le: maintenant(), Resultat: '⚠ ' + e.message } }]);
+      console.error(`Abonnement n° ${a.id} : ${e.message}`);
     }
   }
 }
@@ -212,4 +273,7 @@ const sources = await lignes('Sources');
 const dossiers = await lignes('Dossiers');
 await relayerAgendas(sources);
 await relayerAN(sources, dossiers);
+// Les abonnements publient l'état du document après les dépôts ci-dessus ; les événements relayés n'y entrent
+// qu'une fois intégrés par le module (passage suivant)
+await publierAbonnements(sources, dossiers);
 console.log('Relais terminé.');

@@ -19,7 +19,9 @@
     "parametres": "node outils/aligner-libelles-parametres.js",
     "regles": "node outils/appliquer-regles.js",
     "test:relais": "node --test tests-e2e/relais.test.js",
-    "relais": "node relais/relais.mjs"
+    "relais": "node relais/relais.mjs",
+    "test:diffusion": "node --test --test-concurrency=1 tests-e2e/diffusion.test.js",
+    "migrer": "node outils/migrer.js"
   },
   "devDependencies": {
     "playwright": "1.63.0"
