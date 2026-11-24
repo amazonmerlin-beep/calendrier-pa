@@ -32,6 +32,8 @@ test('relais : dossier de l’Assemblée nationale suivi, réunions déposées p
   const d = (await proprio.lignes(DOC, 'Dossiers')).find(x => x.Lien === LIEN_AN);
   assert.equal(d.Etat, 'Suivi actif');
   assert.match(d.Resultat, /DLR5L17N54629/);
+  assert.match(d.Resultat, /\d+ réunions ou séances de l’Assemblée sur ce dossier, la dernière le \d{1,2} \S+ \d{4}/, d.Resultat);
+  assert.ok(d.Titre && !/Dossiers législatifs|Assemblée nationale$/.test(d.Titre), `titre nettoyé : ${d.Titre}`);
 
   // Un membre ouvre l'agenda et synchronise : les réunions de l'Assemblée arrivent, rattachées au dossier
   const nav = await navigateur();

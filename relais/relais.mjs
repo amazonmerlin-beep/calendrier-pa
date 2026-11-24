@@ -86,7 +86,8 @@ async function identifierDossierAN(lien) {
   const compte = {};
   for (const m of html.matchAll(/DLR5L\d+N\d+/g)) compte[m[0]] = (compte[m[0]] || 0) + 1;
   const uid = Object.entries(compte).sort((a, b) => b[1] - a[1])[0]?.[0];
-  const titre = (/<title>([^<]*)<\/title>/i.exec(html)?.[1] || '').replace(/\s*-\s*Assemblée nationale\s*$/i, '').trim();
+  // « Titre - Dossiers législatifs - 17e législature - Assemblée nationale » -> « Titre »
+  const titre = (/<title>([^<]*)<\/title>/i.exec(html)?.[1] || '').replace(/\s+-\s+(Dossiers législatifs\b.*|Assemblée nationale)$/i, '').trim();
   if (!uid) throw new Error('identifiant du dossier introuvable sur la page');
   return { uid, titre };
 }
@@ -113,15 +114,25 @@ function titreReunion(r) {
   return objet ? `${base} – ${objet}` : base;
 }
 
-/** Réunions de l'agenda qui citent l'un des dossiers suivis : uidOpenData -> { id de la ligne Dossiers, lien }. */
+/**
+ * Réunions de l'agenda qui citent l'un des dossiers suivis (uidOpenData -> { id de la ligne Dossiers, lien }).
+ * Renvoie { evts : celles d'après `depuis`, à relayer ; bilan : id du dossier -> { total, derniere, prochaine } sur
+ * tout l'historique, pour dire où en est le dossier même sans réunion récente }.
+ */
 function reunionsDesDossiers(reunions, suivis, depuis) {
-  const out = [];
+  const out = [], bilan = new Map(), maintenantIso = new Date().toISOString();
   for (const r of reunions) {
-    if (!r?.timeStampDebut || r.timeStampDebut < depuis) continue;
+    if (!r?.timeStampDebut) continue;
     const points = liste(r.ODJ?.pointsODJ?.pointODJ);
     const refs = new Set(points.flatMap(p => liste(p.dossiersLegislatifsRefs?.dossierRef)));
     const suivi = [...refs].map(x => suivis.get(x)).find(Boolean);
     if (!suivi) continue;
+    const b = bilan.get(suivi.id) || { total: 0, derniere: null, prochaine: null };
+    b.total++;
+    if (r.timeStampDebut < maintenantIso) { if (!b.derniere || r.timeStampDebut > b.derniere) b.derniere = r.timeStampDebut; }
+    else if (!b.prochaine || r.timeStampDebut < b.prochaine) b.prochaine = r.timeStampDebut;
+    bilan.set(suivi.id, b);
+    if (r.timeStampDebut < depuis) continue;
     const convocation = liste(r.ODJ?.convocationODJ?.item).join('\n');
     out.push({
       uid: `${r.uid}@assemblee-nationale.fr`, debut: r.timeStampDebut, fin: r.timeStampFin || r.timeStampDebut,
@@ -129,7 +140,16 @@ function reunionsDesDossiers(reunions, suivis, depuis) {
       url: suivi.lien, annule: /annul/i.test(r.cycleDeVie?.etat || ''), dossier: suivi.id,
     });
   }
-  return out.sort((a, b) => a.debut.localeCompare(b.debut));
+  return { evts: out.sort((a, b) => a.debut.localeCompare(b.debut)), bilan };
+}
+
+const jourFr = iso => new Date(iso).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'long', year: 'numeric' });
+function resultatDossier(uid, n, b) {
+  const pl = (k, s, p = s + 's') => `${k} ${k > 1 ? p : s}`;
+  if (!b || !b.total) return `Relais : aucune réunion ni séance de l’Assemblée ne cite encore ce dossier (${uid}).`;
+  const avenir = b.prochaine ? `prochaine le ${jourFr(b.prochaine)}` : 'aucune à venir';
+  const passe = b.derniere ? `, la dernière le ${jourFr(b.derniere)}` : '';
+  return `Relais : ${pl(b.total, 'réunion ou séance', 'réunions ou séances')} de l’Assemblée sur ce dossier${passe} ; ${avenir}. ${pl(n, 'événement')} dans l’agenda (le mois écoulé et la suite) (${uid}).`;
 }
 
 // ------------------------------------------------------------------ déroulé
@@ -154,15 +174,16 @@ async function relayerAN(sources, dossiers) {
   if (!suivis.size) return;
   const reunions = lireAgendaAN();
   const depuis = new Date(Date.now() - 31 * 86400000).toISOString();
-  const evts = reunionsDesDossiers(reunions, suivis, depuis);
+  const { evts, bilan } = reunionsDesDossiers(reunions, suivis, depuis);
   const contenu = ics(SOURCE_AN, evts);
   console.log(`Assemblée nationale : ${reunions.length} réunions lues, ${evts.length} rattachées à ${suivis.size} dossier(s).`);
   await modifier('Sources', [{ id: cible.id, fields: { Contenu_relaye: contenu, Relaye_le: maintenant() } }]);
   // État des dossiers propres à l'Assemblée (les dossiers du Sénat gardent l'état noté par le module)
   await modifier('Dossiers', notes.filter(n => estLienAN(n.d.Lien)).map(({ d, uid, titre }) => {
     const n = evts.filter(e => e.dossier === d.id).length;
-    const f = { Etat: 'Suivi actif', Derniere_verif: maintenant(), Resultat: `Relais : ${n} réunion${n > 1 ? 's' : ''} ou séance${n > 1 ? 's' : ''} trouvée${n > 1 ? 's' : ''} dans l’agenda de l’Assemblée (dossier ${uid}).` };
-    if (!d.Titre && titre) f.Titre = titre;
+    const f = { Etat: 'Suivi actif', Derniere_verif: maintenant(), Resultat: resultatDossier(uid, n, bilan.get(d.id)) };
+    // Titre vide, ou encore celui de la page avec son suffixe (version précédente du relais)
+    if (titre && (!d.Titre || /\s-\s+Dossiers législatifs\b/i.test(d.Titre))) f.Titre = titre;
     return { id: d.id, fields: f };
   }));
 }
