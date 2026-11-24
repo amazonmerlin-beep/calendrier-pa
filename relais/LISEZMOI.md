@@ -33,8 +33,8 @@ lui-même : une seule logique de synchronisation, celle du module.
    *Settings → Secrets and variables → Actions* :
    - secret `GRIST_API_KEY` : la clé du robot ;
    - variable `GRIST_URL` : `https://docs.getgrist.com` ;
-   - variable `GRIST_DOC` : l'identifiant du document (dans son adresse, après `/doc/`… ou via *Paramètres du
-     document*).
+   - secret `GRIST_DOC` : l'identifiant du document (*Paramètres du document* → identifiant) ; en secret pour
+     qu'il soit masqué dans les journaux, publics si le dépôt l'est.
 4. *Actions → Relais Calendrier PA → Run workflow* pour un premier passage ; ensuite, il tourne seul.
 
 ## Ajouter un agenda Google ou Outlook

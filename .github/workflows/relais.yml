@@ -24,5 +24,5 @@ jobs:
         run: node --version && node relais/relais.mjs
         env:
           GRIST_URL: ${{ vars.GRIST_URL }}
-          GRIST_DOC: ${{ vars.GRIST_DOC }}
+          GRIST_DOC: ${{ secrets.GRIST_DOC }}
           GRIST_API_KEY: ${{ secrets.GRIST_API_KEY }}
