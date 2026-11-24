@@ -1,0 +1,28 @@
+# Relais du Calendrier PA : lit l'agenda de l'Assemblée nationale (dossiers suivis) et les agendas Google ou
+# Outlook relayés, puis dépose leur contenu iCal dans le document Grist (relais/relais.mjs, relais/LISEZMOI.md).
+name: Relais Calendrier PA
+on:
+  schedule:
+    # Toutes les deux heures, de 6 h à 22 h (heure de Paris, en heure d'hiver)
+    - cron: '17 5-21/2 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: relais
+  cancel-in-progress: false
+jobs:
+  relais:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Action épinglée sur son empreinte de commit (v7.0.1)
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Relais
+        run: node --version && node relais/relais.mjs
+        env:
+          GRIST_URL: ${{ vars.GRIST_URL }}
+          GRIST_DOC: ${{ vars.GRIST_DOC }}
+          GRIST_API_KEY: ${{ secrets.GRIST_API_KEY }}

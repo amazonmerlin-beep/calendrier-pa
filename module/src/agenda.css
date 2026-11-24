@@ -1,0 +1,98 @@
+/* Calendrier PA : agenda (semaine, mois), dossiers suivis, sources. Classes préfixées « ag- ». */
+.ag { display: flex; flex-direction: column; gap: 12px; }
+.contenu:has(.ag) { max-width: none; }
+
+/* Bandeau : ligne au-dessus du titre (le kit ne la met pas en forme ; masquée en petite largeur par ui.css) */
+@media (min-width: 761px) and (min-height: 561px) {
+  .bandeau-sur { display: block; font-size: 12px; font-weight: 400; letter-spacing: .04em; text-transform: uppercase; color: var(--c-texte-2); }
+}
+
+/* Barre : navigation à gauche, affichage et création à droite */
+.ag-barre { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.ag-nav, .ag-outils { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ag-titre { margin: 0 0 0 8px; font-size: 20px; font-weight: 600; }
+.ag-modes { display: inline-flex; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); overflow: hidden; }
+.ag-modes button { border: 0; background: var(--c-fond); padding: 6px 14px; min-height: 32px; cursor: pointer; }
+.ag-modes button + button { border-left: 1px solid var(--c-bordure-champ); }
+.ag-modes button[aria-pressed="true"] { background: var(--c-action); color: #FFFFFF; }
+
+/* Filtres : un bouton par agenda, avec sa couleur */
+.ag-filtres { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.ag-agendas { display: flex; flex-wrap: wrap; gap: 6px; }
+.ag-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 2px 10px; border: 1px solid var(--c-bordure-champ);
+  border-radius: 999px; background: var(--c-fond); color: var(--c-texte); font-size: 13px; cursor: pointer; }
+.ag-chip[aria-pressed="false"] { color: var(--c-texte-3); text-decoration: line-through; background: var(--c-fond-alt); }
+.ag-chip[aria-pressed="false"] .ag-pastille { background: transparent; box-shadow: inset 0 0 0 2px var(--c); }
+.ag-chip.statique { cursor: default; }
+.ag-pastille { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; vertical-align: middle; }
+.ag-case { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+.ag-synchro { margin: 0; color: var(--c-texte-2); }
+.ag-synchro-texte.en-cours { color: var(--c-action); }
+.ag-synchro-texte.erreur, .texte-erreur { color: var(--c-erreur); }
+
+/* Semaine : sept colonnes ; les jours de fin de semaine vides se resserrent */
+.ag-semaine { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)) repeat(2, minmax(110px, .7fr)); gap: 8px; align-items: start; }
+.ag-jour { border: 1px solid var(--c-bordure); border-radius: 6px; background: var(--c-fond); min-height: 160px; display: flex; flex-direction: column; }
+.ag-jour.weekend { background: var(--c-fond-alt); }
+.ag-jour.aujourdhui { border-color: var(--c-action); box-shadow: inset 0 3px 0 var(--c-action); }
+.ag-jour h3 { margin: 0; padding: 8px 10px 6px; font-size: 14px; font-weight: 600; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 6px; }
+.ag-auj { font-size: 11px; font-weight: 600; text-transform: none; color: var(--c-action); }
+.ag-liste { list-style: none; margin: 0; padding: 0 6px; display: flex; flex-direction: column; gap: 6px; }
+.ag-rien { margin: 0; padding: 0 10px; font-size: 13px; color: var(--c-texte-3); }
+.ag-ajout { margin: auto 6px 6px; padding: 4px; border: 1px dashed var(--c-bordure); border-radius: var(--rayon); background: transparent;
+  color: var(--c-texte-2); font-size: 13px; cursor: pointer; opacity: 0; min-height: 24px; }
+.ag-jour:hover .ag-ajout, .ag-ajout:focus-visible { opacity: 1; }
+
+/* Événement : couleur de son agenda, texte blanc (couleurs choisies pour un contraste de 4,5:1 au moins) */
+.ag-evt { display: block; width: 100%; text-align: left; border: 0; border-radius: var(--rayon); padding: 6px 8px; cursor: pointer;
+  background: var(--c); color: #FFFFFF; font-size: 13px; line-height: 1.35; }
+.ag-evt:hover { filter: brightness(1.12); }
+.ag-evt:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }
+.ag-heure { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ag-evt-titre { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.ag-evt-src { display: block; margin-top: 2px; font-size: 12px; opacity: .92; }
+.ag-evt.ag-annule { background: var(--c-fond-alt); color: var(--c-texte-2); box-shadow: inset 3px 0 0 var(--c); }
+.ag-evt.ag-annule .ag-evt-titre { text-decoration: line-through; }
+.ag-evt.compact { padding: 2px 6px; font-size: 12px; }
+.ag-evt.compact .ag-evt-titre { display: inline; -webkit-line-clamp: unset; }
+.ag-evt.compact { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Mois */
+.ag-mois { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 760px; }
+.ag-mois th { padding: 6px; font-size: 13px; font-weight: 600; text-transform: capitalize; color: var(--c-texte-2); text-align: left; }
+.ag-mois td { border: 1px solid var(--c-bordure); vertical-align: top; height: 118px; padding: 4px; }
+.ag-mois td.hors { background: var(--c-fond-alt); }
+.ag-mois td.hors .ag-num { color: var(--c-texte-3); }
+.ag-mois td.aujourdhui { box-shadow: inset 0 3px 0 var(--c-action); }
+.ag-mois .ag-liste { padding: 0; gap: 3px; }
+.ag-num { border: 0; background: transparent; font-weight: 600; font-size: 13px; min-width: 28px; min-height: 24px; border-radius: var(--rayon); cursor: pointer; }
+.ag-num:hover { background: var(--c-fond-alt); }
+
+/* Fiche et formulaire (fenêtres) */
+.ag-fiche-quand { margin-top: 0; }
+.ag-fiche-desc { white-space: normal; background: var(--c-fond-alt); border-radius: var(--rayon); padding: 10px 12px; margin: 12px 0; max-height: 40vh; overflow: auto; }
+.ag-form { display: flex; flex-direction: column; gap: 12px; }
+.ag-ligne { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.ag-champ { display: flex; flex-direction: column; gap: 4px; }
+.ag-champ label { font-weight: 600; font-size: 14px; }
+.ag-champ input, .ag-champ select, .ag-champ textarea { width: 100%; max-width: none; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); padding: 6px 8px; min-height: 34px; background: var(--c-fond); }
+.ag-champ input[aria-invalid="true"], .ag-ajout-dossier input[aria-invalid="true"] { border-color: var(--c-erreur); }
+
+/* Dossiers et sources */
+.ag-ajout-dossier { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.ag-ajout-dossier label { font-weight: 600; }
+.ag-ligne-saisie { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ag-ligne-saisie input[type="url"] { flex: 1 1 360px; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); padding: 6px 8px; min-height: 34px; }
+.ag-liste-dossier { margin: 4px 0 8px; padding-left: 18px; }
+.ag-actions-dossier { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.petit-titre { font-size: 14px; margin: 12px 0 4px; }
+.statut-erreur { background: var(--c-erreur-fond); color: var(--c-erreur); }
+.ag-sources { list-style: none; padding: 0; margin: 0 0 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 6px 16px; }
+
+/* Petite largeur (et zoom à 200 %) : un jour sous l'autre, les jours de fin de semaine vides masqués */
+@media (max-width: 900px) {
+  .ag-semaine { grid-template-columns: 1fr; }
+  .ag-jour { min-height: 0; }
+  .ag-jour.vide { display: none; }
+  .ag-ajout { opacity: 1; }
+}

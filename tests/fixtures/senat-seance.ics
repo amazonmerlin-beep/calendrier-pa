@@ -1,0 +1,996 @@
+BEGIN:VCALENDAR
+PRODID:-//Senat.fr//Aglaé v1.4 (18/07/2026)//FR
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Europe/Paris
+TZURL:http://tzurl.org/zoneinfo/Europe/Paris
+X-LIC-LOCATION:Europe/Paris
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19810329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19961027T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+000921
+TZOFFSETTO:+000921
+TZNAME:PMT
+DTSTART:18910315T000100
+RDATE:18910315T000100
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+000921
+TZOFFSETTO:+0000
+TZNAME:WET
+DTSTART:19110311T010100
+RDATE:19110311T010100
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0000
+TZOFFSETTO:+0100
+TZNAME:WEST
+DTSTART:19160615T000000
+RDATE:19160615T000000
+RDATE:19170325T000000
+RDATE:19180310T000000
+RDATE:19190302T000000
+RDATE:19200215T000000
+RDATE:19210315T000000
+RDATE:19220326T000000
+RDATE:19230527T000000
+RDATE:19240330T000000
+RDATE:19250405T000000
+RDATE:19260418T000000
+RDATE:19270410T000000
+RDATE:19280415T000000
+RDATE:19290421T000000
+RDATE:19300413T000000
+RDATE:19310419T000000
+RDATE:19320403T000000
+RDATE:19330326T000000
+RDATE:19340408T000000
+RDATE:19350331T000000
+RDATE:19360419T000000
+RDATE:19370404T000000
+RDATE:19380327T000000
+RDATE:19390416T000000
+RDATE:19400225T030000
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0000
+TZNAME:WET
+DTSTART:19161002T010000
+RDATE:19161002T010000
+RDATE:19171008T010000
+RDATE:19181007T010000
+RDATE:19191006T010000
+RDATE:19201024T010000
+RDATE:19211026T010000
+RDATE:19221008T010000
+RDATE:19231007T010000
+RDATE:19241005T010000
+RDATE:19251004T010000
+RDATE:19261003T010000
+RDATE:19271002T010000
+RDATE:19281007T010000
+RDATE:19291006T010000
+RDATE:19301005T010000
+RDATE:19311004T010000
+RDATE:19321002T010000
+RDATE:19331008T010000
+RDATE:19341007T010000
+RDATE:19351006T010000
+RDATE:19361004T010000
+RDATE:19371003T010000
+RDATE:19381002T010000
+RDATE:19391119T010000
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19400615T000000
+RDATE:19400615T000000
+RDATE:19430329T020000
+RDATE:19440403T020000
+RDATE:19760328T010000
+RDATE:19770403T020000
+RDATE:19780402T020000
+RDATE:19790401T020000
+RDATE:19800406T020000
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19421102T030000
+RDATE:19421102T030000
+RDATE:19431004T030000
+RDATE:19450916T030000
+RDATE:19760926T010000
+RDATE:19770925T030000
+RDATE:19781001T030000
+RDATE:19790930T030000
+RDATE:19800928T030000
+RDATE:19810927T030000
+RDATE:19820926T030000
+RDATE:19830925T030000
+RDATE:19840930T030000
+RDATE:19850929T030000
+RDATE:19860928T030000
+RDATE:19870927T030000
+RDATE:19880925T030000
+RDATE:19890924T030000
+RDATE:19900930T030000
+RDATE:19910929T030000
+RDATE:19920927T030000
+RDATE:19930926T030000
+RDATE:19940925T030000
+RDATE:19950924T030000
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0200
+TZNAME:WEMT
+DTSTART:19440825T000000
+RDATE:19440825T000000
+END:DAYLIGHT
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:WEST
+DTSTART:19441008T020000
+RDATE:19441008T020000
+END:DAYLIGHT
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:WEMT
+DTSTART:19450402T030000
+RDATE:19450402T030000
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19770101T000000
+RDATE:19770101T000000
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261124T143000
+DTEND:20261124T163000
+SUMMARY:CMP PJL Projet de loi de finances de fin de gestion pour 2026
+TZID:Europe/Paris
+UID:Aglaé-561744@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Conclusions de la commission mixte paritaire sur le projet de loi de finances de fin de gestion pour 2026 (texte de la commission\, n° 187\, 2026-2027)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 h 30\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261124T143000
+DTEND:20261124T163000
+SUMMARY:PLF 2027 (Articles de la première partie - suite)
+TZID:Europe/Paris
+UID:Aglaé-561746@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la première partie (suite)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 h 30\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261125T103000
+DTEND:20261125T123000
+SUMMARY:PLF 2027 (Articles de la première partie - suite)
+TZID:Europe/Paris
+UID:Aglaé-561019@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la première partie (suite)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:10h30
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261125T150000
+DTEND:20261125T170000
+SUMMARY:Questions d'actualité au Gouvernement
+TZID:Europe/Paris
+UID:Aglaé-561020@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Questions d'actualité au Gouvernement 
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:15h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261125T163000
+DTEND:20261125T183000
+SUMMARY:PLF 2027 (Articles de la première partie - suite)
+TZID:Europe/Paris
+UID:Aglaé-561022@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la première partie (suite)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 16 h 30\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261126T103000
+DTEND:20261126T123000
+SUMMARY:PLF 2027 (Articles de la première partie - suite)
+TZID:Europe/Paris
+UID:Aglaé-561023@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la première partie (suite)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261127T123000
+DTEND:20261127T143000
+SUMMARY:PLF 2027 (Articles de la première partie - suite)
+TZID:Europe/Paris
+UID:Aglaé-561024@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la première partie (suite)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261128T123000
+DTEND:20261128T143000
+SUMMARY:PLF 2027 (Articles de la première partie - suite et fin)
+TZID:Europe/Paris
+UID:Aglaé-561025@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la première partie (suite et fin)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261128T123000
+DTEND:20261128T143000
+SUMMARY:PLF 2027 (Explications de vote)
+TZID:Europe/Paris
+UID:Aglaé-561026@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Explications de vote sur l'ensemble de la première partie
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261128T123000
+DTEND:20261128T143000
+SUMMARY:PLF 2027 (Vote)
+TZID:Europe/Paris
+UID:Aglaé-561028@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Scrutin public ordinaire de droit
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261130T093000
+DTEND:20261130T113000
+SUMMARY:PLF 2027 (Travail)
+TZID:Europe/Paris
+UID:Aglaé-561029@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Travail\, emploi et administration des ministères sociaux (+ articles 88 et 89) (durée maximale prévisionnelle : 4 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261130T093000
+DTEND:20261130T113000
+SUMMARY:PLF 2027 (Écologie)
+TZID:Europe/Paris
+UID:Aglaé-561033@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Écologie\, développement et mobilité durables (+ articles 81 et 82) (durée maximale prévisionnelle : 9 heures) . Budget annexe : Contrôle et exploitation aériens . Compte spécial : Financement des aides aux collectivités pour l'électrification rurale
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261201T110000
+DTEND:20261201T130000
+SUMMARY:17 questions orales
+TZID:Europe/Paris
+UID:Aglaé-561037@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- 17 questions orales
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:11h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261201T140000
+DTEND:20261201T160000
+SUMMARY:PLF 2027 (Transformation et fonction publiques)
+TZID:Europe/Paris
+UID:Aglaé-561038@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Transformation et fonction publiques (durée maximale prévisionnelle : 2 heures 15) . Compte spécial : Gestion du patrimoine immobilier de l'État    et Gestion des finances publiques et lutte contre les fraudes    et Crédits non répartis    et Régimes sociaux et de retraite . Compte spécial : Pensions
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261201T140000
+DTEND:20261201T160000
+SUMMARY:PLF 2027 (Engagements financiers de l'État et Remboursements et dégrèvements)
+TZID:Europe/Paris
+UID:Aglaé-561042@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Engagements financiers de l'État (durée maximale prévisionnelle : 1 heure 30) . Compte spécial : Participations financières de l'État . Compte spécial : Accords monétaires internationaux . Compte spécial : Prêts et avances à divers services de l'État ou organismes gérant des services publics    et Remboursements et dégrèvements
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261201T140000
+DTEND:20261201T160000
+SUMMARY:PLF 2027 (Cohésion des territoires)
+TZID:Europe/Paris
+UID:Aglaé-561046@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Cohésion des territoires (+ article 78) (durée maximale prévisionnelle : 6 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261202T103000
+DTEND:20261202T123000
+SUMMARY:PLF 2027 (Pouvoirs publics\, conseil et contrôle de l'État et Direction de l'action du Gouvernement)
+TZID:Europe/Paris
+UID:Aglaé-561050@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Pouvoirs publics (durée maximale prévisionnelle : 2 heures)    et Conseil et contrôle de l'État    et Direction de l'action du Gouvernement . Budget annexe : Publications officielles et information administrative
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261202T103000
+DTEND:20261202T123000
+SUMMARY:PLF 2027 (AGTE)
+TZID:Europe/Paris
+UID:Aglaé-561054@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Administration générale et territoriale de l'État (+ article 76) (durée maximale prévisionnelle : 1 heure 15)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261202T103000
+DTEND:20261202T123000
+SUMMARY:PLF 2027 (RCT)
+TZID:Europe/Paris
+UID:Aglaé-561058@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Relations avec les collectivités territoriales (+ articles 83 à 87) (durée maximale prévisionnelle : 8 heures 30) . Compte spécial : Avances aux collectivités territoriales et aux collectivités régies par les articles 73\, 74 et 76 de la Constitution
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261203T103000
+DTEND:20261203T123000
+SUMMARY:PLF 2027 (Sécurités)
+TZID:Europe/Paris
+UID:Aglaé-561062@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Sécurités (durée maximale prévisionnelle : 2 heures 30) . Compte spécial : Contrôle de la circulation et du stationnement routiers
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261203T103000
+DTEND:20261203T123000
+SUMMARY:PLF 2027 (Aide publique au développement)
+TZID:Europe/Paris
+UID:Aglaé-561066@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Aide publique au développement (durée maximale prévisionnelle : 1 heure 45) . Compte spécial : prêts à des États étrangers
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261203T103000
+DTEND:20261203T123000
+SUMMARY:PLF 2027 (Action extérieure de l'État)
+TZID:Europe/Paris
+UID:Aglaé-561070@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Action extérieure de l'État (durée maximale prévisionnelle : 3 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261203T103000
+DTEND:20261203T123000
+SUMMARY:PLF 2027 (Santé)
+TZID:Europe/Paris
+UID:Aglaé-561074@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Santé (durée maximale prévisionnelle : 2 heures 45)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 10 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261204T093000
+DTEND:20261204T113000
+SUMMARY:PLF 2027 (Enseignement scolaire)
+TZID:Europe/Paris
+UID:Aglaé-561078@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Enseignement scolaire (durée maximale prévisionnelle : 4 heures 30)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261204T093000
+DTEND:20261204T113000
+SUMMARY:PLF 2027 (Justice)
+TZID:Europe/Paris
+UID:Aglaé-561082@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Justice (durée maximale prévisionnelle : 3 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261204T093000
+DTEND:20261204T113000
+SUMMARY:PLF 2027 (Agriculture)
+TZID:Europe/Paris
+UID:Aglaé-561086@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Agriculture et alimentation (+ article 77) (durée maximale prévisionnelle : 5 heures) . Compte spécial : développement agricole et rural
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261205T123000
+DTEND:20261205T143000
+SUMMARY:PLF 2027 (Immigration)
+TZID:Europe/Paris
+UID:Aglaé-561090@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Immigration\, asile et intégration (durée maximale prévisionnelle : 2 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261205T123000
+DTEND:20261205T143000
+SUMMARY:PLF 2027 (Solidarité)
+TZID:Europe/Paris
+UID:Aglaé-561094@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Solidarité\, insertion et égalité des chances (durée maximale prévisionnelle : 3 heures 30)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261205T123000
+DTEND:20261205T143000
+SUMMARY:PLF 2027 (Outre-mer)
+TZID:Europe/Paris
+UID:Aglaé-561098@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Outre-mer (durée maximale prévisionnelle : 5 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261205T123000
+DTEND:20261205T143000
+SUMMARY:PLF 2027 (Missions reportées)
+TZID:Europe/Paris
+UID:Aglaé-561102@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Éventuellement\, examen des missions et des articles rattachés reportés
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261206T123000
+DTEND:20261206T143000
+SUMMARY:PLF 2027 (Missions reportées)
+TZID:Europe/Paris
+UID:Aglaé-561103@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Éventuellement\, examen des missions et des articles rattachés reportés
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Le matin\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261207T093000
+DTEND:20261207T113000
+SUMMARY:PLF 2027 (Défense)
+TZID:Europe/Paris
+UID:Aglaé-561104@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Défense (+ articles 79 et 80) (durée maximale prévisionnelle : 2 heures 30)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261207T093000
+DTEND:20261207T113000
+SUMMARY:PLF 2027 (Économie et Investir pour la France de 2030)
+TZID:Europe/Paris
+UID:Aglaé-561108@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Économie (durée maximale prévisionnelle : 4 heures) . Compte spécial : Prêts et avances à des particuliers ou à des organismes privés   et Investir pour la France de 2030
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261207T093000
+DTEND:20261207T113000
+SUMMARY:PLF 2027 (Culture)
+TZID:Europe/Paris
+UID:Aglaé-561112@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Culture (durée maximale prévisionnelle : 2 heures 30)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261207T093000
+DTEND:20261207T113000
+SUMMARY:PLF 2027 (Sport)
+TZID:Europe/Paris
+UID:Aglaé-561116@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Sport\, jeunesse et vie associative (durée maximale prévisionnelle : 2 heures 30)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 9 h 30\, l'après-midi\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261208T140000
+DTEND:20261208T160000
+SUMMARY:PLF 2027 (Recherche et enseignement supérieur)
+TZID:Europe/Paris
+UID:Aglaé-561120@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Recherche et enseignement supérieur (durée maximale prévisionnelle : 4 heures)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261208T140000
+DTEND:20261208T160000
+SUMMARY:PLF 2027 (Médias\, livre et industries culturelles)
+TZID:Europe/Paris
+UID:Aglaé-561124@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Médias\, livre et industries culturelles (durée maximale prévisionnelle : 2 heures 15) . Compte spécial : Avances à l'audiovisuel public
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261208T140000
+DTEND:20261208T160000
+SUMMARY:PLF 2027 (Monde combattant)
+TZID:Europe/Paris
+UID:Aglaé-561128@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Monde combattant\, mémoire et liens avec la Nation (durée maximale prévisionnelle : 1 heure 30)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261208T140000
+DTEND:20261208T160000
+SUMMARY:PLF 2027 (Articles non rattachés)
+TZID:Europe/Paris
+UID:Aglaé-561132@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Examen des articles de la seconde partie non rattachés aux crédits
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 heures\, le soir et la nuit
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261209T110000
+DTEND:20261209T130000
+SUMMARY:PLF 2027 (Suite articles non rattachés)
+TZID:Europe/Paris
+UID:Aglaé-561665@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Éventuellement\, suite du projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Éventuellement\, examen des articles de la seconde partie non rattachés aux crédits (suite et fin)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:11h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261209T150000
+DTEND:20261209T170000
+SUMMARY:Questions d'actualité au Gouvernement
+TZID:Europe/Paris
+UID:Aglaé-561666@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Questions d'actualité au Gouvernement 
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:15h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261209T163000
+DTEND:20261209T183000
+SUMMARY:PLF 2027 (Explications de vote)
+TZID:Europe/Paris
+UID:Aglaé-561668@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Explications de vote sur l’ensemble du projet de loi de finances pour 2027
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:16h30
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261209T163000
+DTEND:20261209T183000
+SUMMARY:PLF 2027 (Vote)
+TZID:Europe/Paris
+UID:Aglaé-561671@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de finances\, considéré comme rejeté par l'Assemblée nationale\, pour 2027 (n° 155\, 2026-2027) => Scrutin public à la tribune de droit*
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:16h30
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261209T184500
+DTEND:20261209T204500
+SUMMARY:PPL Pension alimentaire
+TZID:Europe/Paris
+UID:Aglaé-561672@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Proposition de loi\, adoptée par l'Assemblée nationale\, relative à la charge fiscale de la pension alimentaire (n° 31\, 2022-2023)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À l'issue du vote sur le PLF et au plus tard à 18 h 45 et le soir jusqu'à 00 h 15
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261209T184500
+DTEND:20261209T204500
+SUMMARY:Débat sur le thème : « La crise des sargasses dans les Caraïbes. Quelle gouvernance et quels moyens pour une gestion efficace face à l'urgence sanitaire et environnementale ? »
+TZID:Europe/Paris
+UID:Aglaé-561676@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Débat sur le thème : « La crise des sargasses dans les Caraïbes. Quelle gouvernance et quels moyens pour une gestion efficace face à l' urgence sanitaire et environnementale ? »
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À l'issue du vote sur le PLF et au plus tard à 18 h 45 et le soir jusqu'à 00 h 15
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261210T103000
+DTEND:20261210T123000
+SUMMARY:PPL Nationalisation d'ArcelorMittal France
+TZID:Europe/Paris
+UID:Aglaé-561600@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Deuxième lecture de la proposition de loi\, adoptée par l'Assemblée nationale\, visant à la nationalisation d'ArcelorMittal France afin de préserver la souveraineté industrielle de la France (n° 735\, 2025-2026)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:De 10 h 30 à 13 heures et de 14 h 30 à 16 heures
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261210T103000
+DTEND:20261210T123000
+SUMMARY:PPL Présence de distributeurs automatiques de billets dans les communes
+TZID:Europe/Paris
+UID:Aglaé-561604@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Proposition de loi relative à la présence de distributeurs automatiques de billets dans les communes\, présentée par Mmes Céline BRULIN\, Cathy APOURCEAU-POLY\, Cécile CUKIERMAN et plusieurs de leurs collègues (n° 284\, 2025-2026)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:De 10 h 30 à 13 heures et de 14 h 30 à 16 heures
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261210T160000
+DTEND:20261210T180000
+SUMMARY:PPR Garantir un accès continu à l'eau potable dans les territoires ultramarins
+TZID:Europe/Paris
+UID:Aglaé-561608@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Proposition de résolution en application de l'article 34-1 de la Constitution\, visant à garantir un accès continu à l'eau potable dans les territoires ultramarins\, présentée par Mme Edwige DIAZ et plusieurs de ses collègues (n° 154\, 2026-2027)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À l'issue de l'espace réservé au groupe CRCE-K et au plus tard de 16 heures à 20 heures
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261210T160000
+DTEND:20261210T180000
+SUMMARY:PPL Peines planchers pour les crimes et délits commis contre les membres de la force publique et les pompiers
+TZID:Europe/Paris
+UID:Aglaé-561610@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Proposition de loi visant à instaurer des peines planchers pour les crimes et délits commis contre les membres de la force publique et les pompiers\, présentée par M. Laurent CASTILLO et plusieurs de ses collègues (n° 124\, 2026-2027)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À l'issue de l'espace réservé au groupe CRCE-K et au plus tard de 16 heures à 20 heures
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261214T150000
+DTEND:20261214T170000
+SUMMARY:CMP PPL Moderniser et rééquilibrer le fonctionnement du titre-restaurant
+TZID:Europe/Paris
+UID:Aglaé-561165@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Sous réserve de leur dépôt\, conclusions de la commission mixte paritaire sur la proposition de loi visant à moderniser et rééquilibrer le fonctionnement du titre-restaurant
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:15h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261214T150000
+DTEND:20261214T170000
+SUMMARY:CMP PJL Relance et décentralisation du logement
+TZID:Europe/Paris
+UID:Aglaé-561167@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Sous réserve de leur dépôt\, conclusions de la commission mixte paritaire sur le projet de loi visant la relance et la décentralisation du logement
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:15h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261214T150000
+DTEND:20261214T170000
+SUMMARY:PJL Diverses dispositions relatives au secteur nucléaire
+TZID:Europe/Paris
+UID:Aglaé-561169@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi portant diverses dispositions relatives au secteur nucléaire (procédure accélérée) (n° 72\, 2026-2027)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:15h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261214T233000
+DTEND:20261215T013000
+SUMMARY:Débat préalable à la réunion du Conseil européen des 17 et 18 décembre 2026
+TZID:Europe/Paris
+UID:Aglaé-561173@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Débat préalable à la réunion du Conseil européen des 17 et 18 décembre 2026
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:Soir
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261215T093000
+DTEND:20261215T113000
+SUMMARY:Questions orales
+TZID:Europe/Paris
+UID:Aglaé-561175@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Questions orales
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:9h30
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261215T143000
+DTEND:20261215T163000
+SUMMARY:PJL Cohésion républicaine par la lutte contre le racisme et l'antisémitisme
+TZID:Europe/Paris
+UID:Aglaé-561176@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Projet de loi de cohésion républicaine par la lutte contre le racisme et l'antisémitisme (procédure accélérée) (n° 890\, 2025-2026)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 14 h 30 et le soir
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261216T150000
+DTEND:20261216T170000
+SUMMARY:Questions d'actualité au Gouvernement
+TZID:Europe/Paris
+UID:Aglaé-561180@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Questions d'actualité au Gouvernement 
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:15h00
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261216T163000
+DTEND:20261216T183000
+SUMMARY:4 conventions internationales
+TZID:Europe/Paris
+UID:Aglaé-561182@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- 4 conventions internationales examinées selon la procédure d'examen simplifié : => Projet de loi\, adopté par l'Assemblée nationale après engagement de la procédure accélérée\, autorisant l'approbation de l'accord entre le Gouvernement de la République française et le Gouvernement de la République de Moldova relatif à la coopération dans le domaine de la défense (n° 6\, 2026-2027) => Projet de loi\, adopté par l'Assemblée nationale après engagement de la procédure accélérée\, autorisant l'approbation de l'accord entre le Gouvernement de la République française et le Gouvernement de la République de Moldavie dans le domaine de la sécurité sociale (n° 5\, 2026-2027) => Projet de loi autorisant l'approbation de la convention de partenariat entre le Gouvernement de la République française et l'Organisation internationale de police criminelle - INTERPOL (OIPC - INTERPOL) relative aux modalités de réalisation du Programme Immobilier Global du siège d'INTERPOL à Lyon et aux engagements et responsabilités du Gouvernement de la République française et d'INTERPOL (procédure accélérée) (n° 96\, 2026-2027) => Projet de loi autorisant l'approbation de l'accord entre le Gouvernement de la République française et le Gouvernement de la République des Fidji concernant la coopération en matière de défense et le statut des forces (procédure accélérée) (n° 98\, 2026-2027)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 16 h 30 et le soir
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261216T163000
+DTEND:20261216T183000
+SUMMARY:Suite PJL Cohésion républicaine par la lutte contre le racisme et l'antisémitisme
+TZID:Europe/Paris
+UID:Aglaé-561184@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Suite du projet de loi de cohésion républicaine par la lutte contre le racisme et l'antisémitisme (procédure accélérée) (n° 890\, 2025-2026)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 16 h 30 et le soir
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261124T203221Z
+DTSTART:20261216T163000
+DTEND:20261216T183000
+SUMMARY:PPL Garantir la gratuité des parkings des hôpitaux publics
+TZID:Europe/Paris
+UID:Aglaé-561185@senat.fr
+CATEGORIES:Séance publique
+LOCATION:
+DESCRIPTION:- Proposition de loi\, adoptée par l'Assemblée nationale\, visant à garantir la gratuité des parkings des hôpitaux publics pour les patients\, les visiteurs et les personnels sur leur temps de travail (n° 323\, 2025-2026)
+URL:https://www.senat.fr
+X-AGLAE-STARTTYPE:À 16 h 30 et le soir
+ATTACH;VALUE=BINARY;ENCODING=BASE64:https//wwwsenatf
+END:VEVENT
+END:VCALENDAR

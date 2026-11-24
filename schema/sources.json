@@ -1,0 +1,226 @@
+[
+ {
+  "Nom": "Saisie manuelle",
+  "Groupe": "Interne",
+  "Type": "Saisie manuelle",
+  "URL": "",
+  "Active": false,
+  "Couleur": "#15803D"
+ },
+ {
+  "Nom": "Imports de fichiers .ics",
+  "Groupe": "Agenda externe",
+  "Type": "Import de fichier",
+  "URL": "",
+  "Active": false,
+  "Couleur": "#C2410C"
+ },
+ {
+  "Nom": "Assemblée nationale (dossiers suivis)",
+  "Groupe": "Assemblée nationale",
+  "Type": "Flux via relais",
+  "URL": "",
+  "Active": true,
+  "Couleur": "#1E3A8A"
+ },
+ {
+  "Nom": "Séance publique",
+  "Groupe": "Sénat – Séance publique",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Seance/ical.ics",
+  "Active": true,
+  "Couleur": "#B42318"
+ },
+ {
+  "Nom": "Commission de la culture",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-AFCL/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Commission des affaires européennes",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-AFEU/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Commission aménagement du territoire / développement durable",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-DEVE/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Commission des affaires économiques",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-ECON/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Commission des affaires étrangères",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-ETRD/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Commission des finances",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-FINC/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Commission des lois",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-LOIS/ical.ics",
+  "Active": true,
+  "Couleur": "#1D4ED8"
+ },
+ {
+  "Nom": "Commission des affaires sociales",
+  "Groupe": "Sénat – Commissions",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-0-SOCI/ical.ics",
+  "Active": false,
+  "Couleur": "#0F766E"
+ },
+ {
+  "Nom": "Délégation aux collectivités territoriales",
+  "Groupe": "Sénat – Délégations",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-6-coll/ical.ics",
+  "Active": false,
+  "Couleur": "#A21CAF"
+ },
+ {
+  "Nom": "Délégation aux droits des femmes",
+  "Groupe": "Sénat – Délégations",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-6-DDRO/ical.ics",
+  "Active": false,
+  "Couleur": "#A21CAF"
+ },
+ {
+  "Nom": "Délégation aux entreprises",
+  "Groupe": "Sénat – Délégations",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-6-ENTR/ical.ics",
+  "Active": true,
+  "Couleur": "#6D28D9"
+ },
+ {
+  "Nom": "Délégation sénatoriale aux outre-mer",
+  "Groupe": "Sénat – Délégations",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-6-OUTR/ical.ics",
+  "Active": false,
+  "Couleur": "#A21CAF"
+ },
+ {
+  "Nom": "Délégation à la prospective",
+  "Groupe": "Sénat – Délégations",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-6-pros/ical.ics",
+  "Active": false,
+  "Couleur": "#A21CAF"
+ },
+ {
+  "Nom": "Office parlementaire d'évaluation des choix scient. tech.",
+  "Groupe": "Sénat – Délégations",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-7-OPES/ical.ics",
+  "Active": false,
+  "Couleur": "#A21CAF"
+ },
+ {
+  "Nom": "CS Agencification",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-1-AGCF/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "MI Diplomatie climatique",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-4-DIPL/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "MI Loi littoral Loi montagne",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-4-LITT/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "MI Prélèvements obligatoires",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-4-PREL/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "MI Souffrance psychique au travail",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-4-SOUF/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "CE Marges grande distribution",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-5-DIST/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "CE financement des politiques publiques",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-5-FIPP/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "CE Inégalités outre-mer",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-5-OUME/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "CE Universités",
+  "Groupe": "Sénat – Structures temporaires",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Instance-5-UNIV/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ },
+ {
+  "Nom": "Autres activités du Sénat",
+  "Groupe": "Sénat – Autres",
+  "Type": "Flux iCal",
+  "URL": "https://www.senat.fr/aglae/Divers/ical.ics",
+  "Active": false,
+  "Couleur": "#475467"
+ }
+]
