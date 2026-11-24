@@ -1,11 +1,13 @@
 'use strict';
 // Réglages du projet : le premier fichier à adapter. Le reste du kit les lit ici.
+// Réglages propres à ce poste, hors dépôt (projet.local.json, ignoré par git) : adresses réelles, à ne pas publier.
+const local = (() => { try { return require('./projet.local.json'); } catch (e) { return {}; } })();
 module.exports = {
   nom: 'Calendrier PA',              // nom du document Grist
   urlId: 'calendrier-pa',            // adresse fixe : /o/docs/doc/<urlId>
   espace: 'Calendrier',              // espace de travail Grist
   titre: 'Calendrier PA',            // titre de la page et du module
-  contactEmail: 'contact@example.org',
+  contactEmail: local.contactEmail || 'contact@example.org',
   // Rôles de l'annuaire. Membre : consulte et alimente l'agenda (événements, dossiers suivis, imports).
   // Administration : en plus, choisit les sources suivies et gère les comptes.
   roles: {

@@ -9,3 +9,5 @@ livrables/*.grist
 tests-e2e/captures/
 # Clés d’API (jamais versionnées)
 *.secret
+# Réglages propres au poste (adresses réelles)
+projet.local.json

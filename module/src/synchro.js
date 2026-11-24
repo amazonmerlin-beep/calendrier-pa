@@ -92,7 +92,7 @@
       if (type === 'an') {
         // Lu par le relais GitHub (l'Assemblée nationale ne se lit pas depuis un navigateur), qui note lui-même l'état
         if (d.Etat === 'À analyser') actions.push(['UpdateRecord', 'Dossiers', d.id, { Etat: 'En attente du relais', Derniere_verif: t,
-          Resultat: 'Lecture par le relais GitHub, à son prochain passage (s’il est installé).' }]);
+          Resultat: 'Lu par le relais à son prochain passage (toutes les deux heures, de 6 h à 22 h).' }]);
         continue;
       }
       if (type !== 'senat') {

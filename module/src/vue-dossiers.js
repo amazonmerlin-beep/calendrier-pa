@@ -8,7 +8,7 @@
   const ETATS = {
     'À analyser': ['En attente d’analyse', 'statut-en-cours'],
     'Suivi actif': ['Suivi actif', 'statut-valide'],
-    'En attente du relais': ['Relais à installer', 'statut-non-commence'],
+    'En attente du relais': ['Lecture au prochain passage du relais', 'statut-non-commence'],
     Erreur: ['À vérifier', 'statut-erreur'],
   };
   const badge = s => `<span class="statut ${(ETATS[s] || [])[1] || ''}" data-etat="${esc(s)}">${esc((ETATS[s] || [])[0] || s || '—')}</span>`;

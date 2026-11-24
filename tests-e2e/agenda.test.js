@@ -122,3 +122,32 @@ test('droits : un membre ne change pas les sources suivies ; un inconnu ne voit 
   await capturer(p2, '09-inconnu');
   await ctx2.close();
 });
+
+test('administration : abonnement à un agenda Google ; son adresse secrète reste illisible pour un membre', async () => {
+  const SECRET = 'https://calendar.google.com/calendar/ical/equipe%40example.org/private-0123456789abcdef/basic.ics';
+  const ctx3 = await nav.nouveau();
+  const { page: p3, module: m3 } = await ouvrir(ctx3, 'admin@projet.test', 'Admin projet');
+  await cliquer(m3, '.onglets [data-vue="sources"]');
+  await m3.waitForSelector('[data-action="ajouter-agenda"]');
+  await m3.$eval('[data-action="ajouter-agenda"]', b => b.click());
+  await m3.waitForSelector('#ag-nom[aria-invalid="true"]');
+  await m3.fill('#ag-nom', 'Agenda équipe');
+  await m3.fill('#ag-url', 'http://pas-sur.example.org/agenda.ics');
+  await m3.click('[data-action="ajouter-agenda"]');
+  await m3.waitForSelector('#ag-url[aria-invalid="true"]');
+  await m3.fill('#ag-url', SECRET);
+  await m3.click('[data-action="ajouter-agenda"]');
+  let s = null;
+  for (let i = 0; i < 40 && !s; i++) { s = (await proprio.lignes(DOC, 'Sources')).find(x => x.Nom === 'Agenda équipe'); if (!s) await p3.waitForTimeout(250); }
+  assert.ok(s, 'source créée');
+  assert.deepEqual([s.Type, s.Groupe, s.Active, s.URL], ['Flux via relais', 'Agenda externe', true, SECRET]);
+  // Après l'ajout, le formulaire est vidé et l'erreur précédente effacée
+  await m3.waitForFunction(() => { const u = document.getElementById('ag-url'); return u && u.value === '' && !u.getAttribute('aria-invalid'); }, null, { timeout: 10000 });
+  await capturer(p3, '10-abonnement');
+  await ctx3.close();
+  const membre = await client('membre@projet.test', 'Membre');
+  const vu = (await membre.lignes(DOC, 'Sources')).find(x => x.id === s.id);
+  assert.ok(vu, 'le membre voit la source');
+  assert.notEqual(vu.URL, SECRET, 'mais pas son adresse secrète');
+  assert.equal(await m.$('[data-action="ajouter-agenda"]'), null, 'pas de formulaire pour un membre');
+});

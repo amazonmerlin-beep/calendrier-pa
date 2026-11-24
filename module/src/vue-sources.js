@@ -37,6 +37,37 @@
       </div>`;
   }
 
+  // Le relais (GitHub Actions) passe toutes les deux heures, de 6 h à 22 h : au-delà de 10 h sans passage, il est
+  // sans doute arrêté (nuit comprise)
+  const RELAIS_ALERTE_S = 10 * 3600;
+  function etatRelais(toutes) {
+    const relais = toutes.filter(s => s.Type === 'Flux via relais');
+    const dernier = Math.max(0, ...relais.map(s => s.Relaye_le || 0));
+    const quoi = 'Le relais lit l’agenda de l’Assemblée nationale pour les dossiers suivis, et les agendas Google ou Outlook abonnés, toutes les deux heures de 6 h à 22 h.';
+    if (!dernier) return `${quoi} <b>Il n’est pas encore passé.</b>`;
+    const age = Date.now() / 1000 - dernier;
+    if (age > RELAIS_ALERTE_S) return `${quoi} <span class="texte-erreur"><b>Dernier passage ${esc(Y.depuis(dernier))}</b> : il semble arrêté.</span>`;
+    return `${quoi} Dernier passage ${esc(Y.depuis(dernier))}.`;
+  }
+
+  const COULEURS = [['#C2410C', 'Orange'], ['#0E7490', 'Bleu canard'], ['#4D7C0F', 'Vert olive'], ['#9D174D', 'Framboise'], ['#5B21B6', 'Violet']];
+  let agenda = { nom: '', url: '', couleur: COULEURS[0][0] }, erreursAgenda = {};
+  const champAgenda = (id, lib, html) => `<div class="ag-champ"><label for="${id}">${esc(lib)} <span class="repere">obligatoire</span></label>${html}
+    <p class="erreur-champ" id="${id}-err"${erreursAgenda[id] ? '' : ' hidden'}>${esc(erreursAgenda[id] || '')}</p></div>`;
+  const invalide = id => (erreursAgenda[id] ? ` aria-invalid="true" aria-describedby="${id}-err"` : '');
+  function formulaireAgenda() {
+    return `<h4>S’abonner à un agenda Google ou Outlook</h4>
+      <p class="petit">Google Agenda : paramètres de l’agenda, « Intégrer l’agenda », <b>adresse secrète au format iCal</b>. Outlook : paramètres du calendrier, « Calendriers partagés », <b>publier un calendrier</b>, lien ICS. De préférence un agenda dédié à l’équipe : tout son contenu entre dans le Calendrier PA. L’adresse n’est lisible que par l’administration.</p>
+      <div class="ag-form ag-form-agenda">
+        <div class="ag-ligne">
+          ${champAgenda('ag-nom', 'Nom affiché', `<input id="ag-nom" type="text" maxlength="80" value="${esc(agenda.nom)}"${invalide('ag-nom')}>`)}
+          <div class="ag-champ"><label for="ag-couleur">Couleur</label><select id="ag-couleur">${COULEURS.map(([c, l]) => `<option value="${c}"${c === agenda.couleur ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
+        </div>
+        ${champAgenda('ag-url', 'Adresse iCal', `<input id="ag-url" type="url" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" value="${esc(agenda.url)}"${invalide('ag-url')}>`)}
+        <p><button type="button" class="btn" data-action="ajouter-agenda">Ajouter l’agenda</button></p>
+      </div>`;
+  }
+
   A.vues.sources = {
     rendre() {
       const admin = C.estAdmin();
@@ -54,15 +85,16 @@
               <td class="${/^⚠/.test(s.Resultat_synchro || '') ? 'texte-erreur' : ''}">${esc(s.Resultat_synchro || '')}</td><td class="num">${esc(s.Nb_evenements ?? '')}</td></tr>`).join('')}</tbody></table></div>` : ''}
         </section>
         <section class="bloc"><h3>Importer un fichier .ics</h3>${blocImport()}</section>
-        <section class="bloc"><h3>Agendas du Sénat</h3>
+        <section class="bloc"><h3>Agendas suivis</h3>
           ${admin ? '' : '<p class="discret petit">Le choix des agendas suivis revient à l’administration.</p>'}
           ${groupes.map(g => `<h4>${esc(g)}</h4><ul class="ag-sources">${flux.filter(s => s.Groupe === g).map(s => `<li>
             ${admin ? `<label class="interrupteur"><input type="checkbox" role="switch" data-change="source-suivie" data-id="${s.id}"${s.Active ? ' checked' : ''}> <span class="ag-pastille" style="--c:${couleur(s)}" aria-hidden="true"></span> ${esc(s.Nom)}</label>`
               : `<span class="ag-pastille" style="--c:${couleur(s)}" aria-hidden="true"></span> ${esc(s.Nom)} : <span data-etat="${s.Active ? 'suivi' : 'non'}">${s.Active ? 'suivi' : 'non suivi'}</span>`}
           </li>`).join('')}</ul>`).join('')}
         </section>
-        <section class="bloc"><h3>Agendas Google ou Outlook, Assemblée nationale</h3>
-          <p class="petit">Google, Microsoft et l’Assemblée nationale ne laissent pas un navigateur lire leurs agendas. L’abonnement automatique passera par un relais (GitHub), à installer : voir l’onglet Aide. En attendant, importez les fichiers .ics ci-dessus.</p>
+        <section class="bloc"><h3>Relais : Assemblée nationale, agendas Google et Outlook</h3>
+          <p class="petit">${etatRelais(toutes)}</p>
+          ${admin ? formulaireAgenda() : '<p class="discret petit">L’abonnement à un agenda Google ou Outlook se demande à l’administration ; pour un événement isolé, importez son fichier .ics ci-dessus.</p>'}
         </section>
       </div>`;
     },
@@ -97,6 +129,27 @@
     const st = await Y.importer(choisis, cible);
     lu = null;
     C.toast(`Import terminé : ${S.resumer(st)}.`);
+  };
+  A.actions['ajouter-agenda'] = async () => {
+    const v = id => ((document.getElementById(id) || {}).value || '').trim();
+    agenda = { nom: v('ag-nom'), url: v('ag-url'), couleur: v('ag-couleur') || COULEURS[0][0] };
+    erreursAgenda = {};
+    if (!agenda.nom) erreursAgenda['ag-nom'] = 'Indiquez le nom affiché dans l’agenda.';
+    else if ((e.doc.Sources || []).some(x => String(x.Nom).toLowerCase() === agenda.nom.toLowerCase())) erreursAgenda['ag-nom'] = 'Ce nom est déjà pris.';
+    const url = S.urlSure(agenda.url);
+    if (!agenda.url) erreursAgenda['ag-url'] = 'Collez l’adresse iCal de l’agenda.';
+    else if (!/^https:\/\//.test(url)) erreursAgenda['ag-url'] = 'Indiquez une adresse qui commence par https://';
+    else if ((e.doc.Sources || []).some(x => x.URL === url)) erreursAgenda['ag-url'] = 'Cet agenda est déjà abonné.';
+    const premiere = Object.keys(erreursAgenda)[0];
+    if (premiere) {
+      A.rendre();
+      const x = document.getElementById(premiere); if (x) x.focus();
+      return;
+    }
+    const b = C.racine().querySelector('[data-action="ajouter-agenda"]'); if (b) b.focus();
+    await C.appliquer([['AddRecord', 'Sources', null, { Nom: agenda.nom, Groupe: 'Agenda externe', Type: 'Flux via relais', Active: true, URL: url, Couleur: agenda.couleur }]]);
+    agenda = { nom: '', url: '', couleur: COULEURS[0][0] };
+    C.toast('Agenda ajouté : il sera lu au prochain passage du relais, dans les deux heures.');
   };
   A.actions['source-suivie'] = async el => {
     await C.maj('Sources', Number(el.dataset.id), { Active: el.checked }, { rendre: false });

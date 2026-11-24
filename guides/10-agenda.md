@@ -32,7 +32,7 @@ La synchronisation lit la page du dossier, repère les numéros de ses textes et
 
 Une réunion qui ne cite pas le numéro du texte n’est pas trouvée : rattachez-la à la main (champ **Dossier législatif** de l’événement).
 
-Les dossiers de l’Assemblée nationale sont enregistrés ; leur lecture passera par le relais (à installer).
+Un dossier de l’Assemblée nationale (par exemple `https://www.assemblee-nationale.fr/dyn/17/dossiers/PLF_2027`) est lu par le **relais**, toutes les deux heures de 6 h à 22 h : il y retrouve toutes les réunions de commission et séances qui citent le dossier, avec leurs vraies heures de fin. Un dossier du Sénat dont la page renvoie vers l’Assemblée est suivi des deux côtés. La fiche du dossier indique le nombre de réunions, la dernière et la prochaine date.
 
 ## Importer une invitation Outlook ou Google
 
@@ -43,3 +43,12 @@ Onglet **Sources et imports**, **Choisir un fichier .ics** :
 - site qui propose « Ajouter à mon agenda » : choisissez iCal ou Outlook.
 
 Vérifiez la liste, décochez ce qui ne doit pas entrer, puis **Importer**. Un événement déjà importé est mis à jour, sans doublon ; une annulation reçue par courriel le marque « Annulé ».
+
+## S’abonner à un agenda Google ou Outlook (administration)
+
+Onglet **Sources et imports**, **S’abonner à un agenda Google ou Outlook** : un nom, l’adresse iCal, une couleur.
+
+- Google Agenda : paramètres de l’agenda, « Intégrer l’agenda », **adresse secrète au format iCal**.
+- Outlook : paramètres du calendrier, « Calendriers partagés », **publier un calendrier**, lien ICS.
+
+Prenez de préférence un agenda dédié à l’équipe : tout son contenu entre dans le Calendrier PA. L’adresse n’est lisible que par l’administration. Le relais lit l’agenda à son passage suivant, puis toutes les deux heures. Pour arrêter, décochez l’agenda dans **Agendas suivis**.
