@@ -398,7 +398,7 @@ async function publierRepertoire() {
     const contenu = JSON.stringify({ genere: new Date().toISOString(), dossiers });
     const g = await deposer(p('repertoire_gist')?.Valeur, REPERTOIRE_FICHIER, contenu, 'Calendrier PA (répertoire des dossiers législatifs en cours)');
     const valeurs = [['repertoire_maj', String(maintenant()), 'Date du répertoire des dossiers en cours (écrite par le relais)']];
-    if (g) valeurs.push(['repertoire_gist', g.id, 'Publication du répertoire (écrite par le relais)'], ['repertoire_url', adresseGist(g, REPERTOIRE_FICHIER), 'Adresse du répertoire des dossiers en cours (écrite par le relais)']);
+    if (g) valeurs.push(['repertoire_gist', g.id, 'Identifiant du gist qui porte le répertoire (pas un secret : données publiques, lecture seule ; écrit par le relais)'], ['repertoire_url', adresseGist(g, REPERTOIRE_FICHIER), 'Adresse du répertoire des dossiers en cours (écrite par le relais)']);
     await appliquer(valeurs.map(([Cle, Valeur, Libelle]) => (p(Cle) ? ['UpdateRecord', 'Parametres', p(Cle).id, { Valeur }] : ['AddRecord', 'Parametres', null, { Cle, Valeur, Libelle }])));
     console.log(`Répertoire : ${dossiers.length} dossiers en cours publiés (${Math.round(contenu.length / 1024)} Ko), ${exclusAN} dossiers de l’Assemblée écartés (clos ou hors procédure législative).`);
   } finally { rmSync(rep, { recursive: true, force: true }); }

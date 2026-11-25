@@ -87,6 +87,17 @@ test('demande d’accès : la personne la dépose, l’administration l’accept
   await ctxA.close();
 });
 
+test('paramètres techniques du répertoire : lus par les inscrits, pas par un compte non inscrit', async () => {
+  const p = (await proprio.lignes(DOC, 'Parametres')).find(x => x.Cle === 'repertoire_gist');
+  if (!p) await proprio.ajouter(DOC, 'Parametres', [{ Cle: 'repertoire_gist', Valeur: 'essai', Libelle: 'essai' }]);
+  const intrus = await client('intrus@ailleurs.test', 'Intrus');
+  const vus = (await intrus.lignes(DOC, 'Parametres')).map(x => x.Cle);
+  assert.ok(vus.includes('contact_email'), 'le contact reste lisible');
+  assert.ok(!vus.some(c => /^repertoire_/.test(c)), vus.join(', '));
+  const membre = await client('membre@projet.test', 'Membre');
+  assert.ok((await membre.lignes(DOC, 'Parametres')).some(x => x.Cle === 'repertoire_gist'));
+});
+
 test('un membre ne lit ni l’annuaire ni les demandes', async () => {
   const membre = await client('membre@projet.test', 'Membre');
   assert.deepEqual(await membre.lignes(DOC, 'Annuaire').catch(() => []), []);

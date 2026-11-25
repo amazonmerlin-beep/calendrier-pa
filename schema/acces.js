@@ -31,6 +31,8 @@ function jeux() {
       regles: [
         [PROPRIO, '+CRUD'],
         [ADMIN, '+CRUD', 'Admin : paramètres'],
+        // Paramètres techniques écrits par le relais (répertoire) : rien de secret, mais inutiles à qui n'est pas inscrit
+        [`not (${CONNU}) and rec.Cle in ["repertoire_gist", "repertoire_url", "repertoire_maj"]`, '-R', 'Paramètres techniques : comptes inscrits seulement'],
         ['', '+R-CUD', 'Tous, même inconnus : lecture (le widget est rattaché à cette table)'],
       ],
     },
