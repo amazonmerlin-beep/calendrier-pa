@@ -23,11 +23,13 @@ Les événements du Sénat arrivent seuls. Vous pouvez les corriger (le Sénat n
 
 ## Synchronisation
 
-L’agenda se met à jour à l’ouverture si la dernière lecture des flux date de plus de 30 minutes. **Synchroniser maintenant** relance la lecture. Un événement retiré par le Sénat disparaît ; s’il porte des notes, il reste, barré, avec le statut « Retiré de la source ».
+L’agenda se met à jour **seul**, toutes les deux heures de 6 h à 22 h, même si personne ne l’ouvre (relais GitHub). En plus, l’ouverture de l’agenda relance la lecture si elle date de plus de 30 minutes, et **Synchroniser maintenant** la relance à la demande. Un événement retiré par le Sénat disparaît ; s’il porte des notes, il reste, barré, avec le statut « Retiré de la source ».
 
 ## Suivre un dossier législatif
 
-Onglet **Dossiers suivis** : collez le lien d’un dossier du Sénat (par exemple `https://www.senat.fr/dossier-legislatif/pjlf2027.html`) puis **Suivre ce dossier**.
+Onglet **Dossiers suivis**, **Chercher un dossier en cours** : tapez quelques mots du titre (« fin de vie », « budget 2027 », « PLFSS ») ou un numéro de texte (`ppl25-123`), puis **Suivre**. La recherche porte sur tous les dossiers législatifs **en cours** au Sénat et à l’Assemblée nationale (les dossiers clos, promulgués, retirés ou caducs n’y sont pas) ; un dossier présent dans les deux assemblées est suivi des deux côtés. Le répertoire est mis à jour chaque matin.
+
+Vous pouvez aussi coller le lien d’un dossier (par exemple `https://www.senat.fr/dossier-legislatif/pjlf2027.html`) puis **Suivre ce dossier**.
 
 La synchronisation lit la page du dossier, repère les numéros de ses textes et rattache au dossier toutes les réunions et séances du Sénat qui les citent, même dans un agenda que l’équipe ne suit pas. Le calendrier annoncé sur la page du dossier est affiché à côté. **Voir dans l’agenda** affiche seulement les événements du dossier.
 

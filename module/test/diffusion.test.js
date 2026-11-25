@@ -9,7 +9,7 @@ require('../src/sync.js');
 require('../src/diffusion.js');
 const D = globalThis.Formulaire.diffusion, S = globalThis.Formulaire.sync;
 let ICAL;
-test.before(async () => { ICAL = (await import(pathToFileURL(path.join(__dirname, '..', '..', 'tests', 'vendor', 'ical-2.1.0.min.mjs')).href)).default; });
+test.before(async () => { ICAL = (await import(pathToFileURL(path.join(__dirname, '..', '..', 'vendor', 'ical-2.1.0.min.mjs')).href)).default; });
 
 const paris = (a, mo, j, h = 0, mi = 0) => S.versEpoch(a, mo, j, h, mi, 0);
 const MAINTENANT = paris(2026, 11, 24, 21);

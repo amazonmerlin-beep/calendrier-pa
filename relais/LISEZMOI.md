@@ -7,9 +7,13 @@ dossiers législatifs. Il ne peut pas lire :
 - les agendas **Google** et **Outlook** (même chose).
 
 Le relais est un script (`relais.mjs`, Node 20+, sans dépendance) lancé par **GitHub Actions** toutes les deux
-heures (`.github/workflows/relais.yml`). Il dépose ce qu'il lit dans la table `Sources` du document
-(`Contenu_relaye`) ; le module l'intègre ensuite comme n'importe quel flux. Le relais n'écrit jamais d'événement
-lui-même : une seule logique de synchronisation, celle du module.
+heures de 6 h à 22 h (`.github/workflows/relais.yml`). Il fait **toute la synchronisation**, même si personne n'ouvre
+le document, avec le **même moteur** que le module (`module/src/moteur.js`, `sync.js`) : une seule logique, que la
+synchronisation parte d'un navigateur ou du relais.
+
+Appels à l'API Grist par passage : 4 lectures et 2 écritures (le verrou, puis un lot unique), une lecture de plus s'il
+y a des abonnements ; une écriture de plus seulement quand un abonnement change, et une par jour pour le répertoire.
+Soit environ 60 appels par jour.
 
 ## Ce qu'il fait
 
@@ -21,7 +25,15 @@ lui-même : une seule logique de synchronisation, celle du module.
    Contrairement au Sénat, l'Assemblée publie l'heure de fin réelle.
 2. **Agendas Google ou Outlook** : pour chaque source de type « Flux via relais », suivie, avec une adresse
    iCal, il télécharge l'agenda et le dépose tel quel. L'adresse n'apparaît jamais dans le journal.
-3. **Abonnements de consultation** (onglet Diffusion, table `Abonnements`) : il sélectionne les événements choisis
+3. **Synchronisation** : flux du Sénat, pages des dossiers suivis, contenus relayés, comme depuis un navigateur.
+4. **Répertoire des dossiers en cours** (premier passage du matin, ou *Run workflow* avec « Refaire aussi le
+   répertoire ») : `relais/repertoire.mjs` croise l'open data du Sénat (`dossiers-legislatifs.csv`) et de
+   l'Assemblée (`Dossiers_Legislatifs.json.zip`), ne garde que les dossiers **en cours** (exclus : promulgués,
+   adoptés, caducs, retirés, rejetés, résolutions votées, anciennes législatures ; et ce qui n'est pas un dossier
+   législatif : rapports, missions, commissions d'enquête), fusionne un dossier présent dans les deux assemblées, et
+   publie le tout (≈ 3 000 dossiers) dans un gist ; son adresse est notée dans `Parametres` (`repertoire_url`). Le
+   module y cherche sans quitter Grist. Ces données sont publiques.
+5. **Abonnements de consultation** (onglet Diffusion, table `Abonnements`) : il sélectionne les événements choisis
    (même code que l'aperçu du module, `module/src/diffusion.js`), écrit l'agenda iCal et le publie dans un **gist
    secret** GitHub (non répertorié : seule l'adresse y donne accès), dont l'adresse est notée dans l'abonnement. Un
    abonnement arrêté voit son gist supprimé. Le dépôt et ses pages ne servent pas : public, il exposerait tout.

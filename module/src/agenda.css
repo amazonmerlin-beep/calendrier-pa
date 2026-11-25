@@ -106,3 +106,14 @@
 .ag-adresse label { font-weight: 600; }
 .ag-adresse input { width: 100%; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); padding: 6px 8px; min-height: 34px;
   background: var(--c-fond-alt); font-family: var(--police); font-size: 13px; }
+
+/* Recherche dans le répertoire des dossiers en cours */
+.ag-recherche { margin-bottom: 20px; }
+.ag-recherche h3 { margin: 0 0 8px; font-size: 16px; }
+.ag-recherche input[type="search"] { flex: 1 1 360px; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); padding: 6px 8px; min-height: 34px; }
+.ag-recherche select { flex: 0 0 auto; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); padding: 6px 8px; min-height: 34px; background: var(--c-fond); }
+#rech-etat { margin: 8px 0; }
+.ag-resultats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ag-resultat { border: 1px solid var(--c-bordure); border-radius: 6px; padding: 10px 12px; }
+.ag-resultat p { margin: 0 0 4px; }
+.ag-resultat-titre { font-weight: 600; }

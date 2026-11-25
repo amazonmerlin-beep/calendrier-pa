@@ -1,5 +1,6 @@
-// Vue Dossiers suivis : on colle le lien d'un dossier législatif (Sénat ou Assemblée nationale) ; la
-// synchronisation repère ses textes et rattache les réunions et séances de l'agenda du Sénat.
+// Vue Dossiers suivis : on cherche un dossier en cours dans le répertoire (publié chaque jour par le relais), ou on
+// colle son lien (Sénat ou Assemblée nationale) ; la synchronisation repère ses textes et rattache ses réunions et
+// séances.
 (function (L) {
   'use strict';
   const C = L.core, A = L.app, S = L.sync, Y = L.synchro, esc = C.esc, e = C.etat;
@@ -15,16 +16,102 @@
   const evenementsDe = d => (e.doc.Evenements || []).filter(ev => ev.Dossier === d.id).sort((x, y) => x.Debut - y.Debut);
   let saisie = '', erreurSaisie = '';
 
+  // ------------------------------------------------------------------ recherche dans le répertoire
+  const R = L.repertoire;
+  const F_JOUR = new Intl.DateTimeFormat('fr-FR', { timeZone: S.PARIS, day: 'numeric', month: 'long', year: 'numeric' });
+  const jourIso = d => (/^\d{4}-\d\d-\d\d$/.test(d || '') ? F_JOUR.format(new Date(d + 'T12:00:00Z')).replace(/^1 /, '1er ') : '');
+  // Chargé une fois par session, à la première recherche ; gardé dans la vue pour survivre aux redessins
+  let rep = null, repEtat = 'vide', repErreur = '', recherche = '', assemblee = '', trouves = { total: 0, resultats: [] };
+  async function chargerRepertoire() {
+    if (rep || repEtat === 'chargement') return;
+    const url = S.urlSure(C.param('repertoire_url'));
+    if (!url) { repEtat = 'absent'; return majRecherche(); }
+    repEtat = 'chargement'; majRecherche();
+    try {
+      const r = await fetch(url, { credentials: 'omit' });
+      if (!r.ok) throw new Error(`erreur ${r.status}`);
+      const j = await r.json();
+      rep = { genere: j.genere, dossiers: R.preparer(j) };
+      repEtat = 'pret';
+      calculer();
+    } catch (x) { repEtat = 'erreur'; repErreur = x.message; }
+    majRecherche();
+  }
+  function calculer() { trouves = rep ? R.chercher(rep.dossiers, recherche, { assemblee, limite: 30 }) : { total: 0, resultats: [] }; }
+  const dejaSuivis = () => new Set((e.doc.Dossiers || []).flatMap(d => [d.Lien, d.Lien_autre]).filter(Boolean)
+    .map(l => (S.typeLienDossier(l) === 'senat' ? S.lienDossierCanonique(l) : l)));
+  function texteEtat() {
+    if (repEtat === 'absent') return 'Le répertoire des dossiers en cours n’est pas encore publié (le relais le publie chaque matin) : collez le lien du dossier ci-dessous.';
+    if (repEtat === 'chargement') return 'Chargement du répertoire…';
+    if (repEtat === 'erreur') return `Répertoire indisponible (${repErreur}) : collez le lien du dossier ci-dessous.`;
+    if (repEtat !== 'pret') return 'Tapez quelques mots du titre, ou un numéro.';
+    const base = `Répertoire du ${F_JOUR.format(new Date(rep.genere))} : ${rep.dossiers.length.toLocaleString('fr-FR')} dossiers en cours au Sénat et à l’Assemblée nationale.`;
+    if (R.normaliser(recherche).length < 2) return base;
+    if (!trouves.total) return 'Aucun dossier en cours ne correspond. Essayez d’autres mots, ou collez le lien ci-dessous.';
+    return `${trouves.total} dossier${trouves.total > 1 ? 's' : ''} en cours trouvé${trouves.total > 1 ? 's' : ''}${trouves.total > trouves.resultats.length ? `, les ${trouves.resultats.length} plus pertinents affichés` : ''}.`;
+  }
+  function htmlResultats() {
+    if (repEtat !== 'pret' || R.normaliser(recherche).length < 2) return '';
+    const suivis = dejaSuivis();
+    return trouves.resultats.map((x, i) => {
+      const ls = R.lienSenat(x), la = R.lienAN(x), suivi = suivis.has(ls) || suivis.has(la);
+      const meta = [x.ty, x.d ? `déposé le ${jourIso(x.d)}` : '', x.e || 'en cours', x.m && x.m !== x.d ? `dernière étape le ${jourIso(x.m)}` : ''].filter(Boolean).join(' · ');
+      return `<li class="ag-resultat"><p class="ag-resultat-titre">${esc(x.t)}</p>
+        ${x.t2 ? `<p class="petit discret">À l’Assemblée : ${esc(x.t2)}</p>` : ''}
+        <p class="petit discret">${esc(meta)}</p>
+        <p class="ag-actions-dossier">
+          ${suivi ? '<span class="statut statut-valide" data-etat="suivi">Déjà suivi</span>'
+            : `<button type="button" class="btn secondaire petit" data-action="suivre-repertoire" data-cle="${i}">Suivre<span class="sr-only"> : ${esc(x.t)}</span></button>`}
+          ${ls ? `<a href="${esc(ls)}" target="_blank" rel="noopener noreferrer">Sénat<span class="sr-only"> : ${esc(x.t)}</span></a>` : ''}
+          ${la ? `<a href="${esc(la)}" target="_blank" rel="noopener noreferrer">Assemblée nationale<span class="sr-only"> : ${esc(x.t)}</span></a>` : ''}
+        </p></li>`;
+    }).join('');
+  }
+  /** Mise à jour sur place (le focus reste dans le champ de recherche) */
+  function majRecherche() {
+    const st = document.getElementById('rech-etat'), z = document.getElementById('rech-resultats');
+    if (st) st.textContent = texteEtat();
+    if (z) { z.innerHTML = htmlResultats(); C.signalerNouvellesFenetres(z); }
+  }
+  let minuterie = null;
+  document.addEventListener('input', ev => {
+    if (!ev.target || ev.target.id !== 'rech-dossier') return;
+    recherche = ev.target.value;
+    clearTimeout(minuterie);
+    minuterie = setTimeout(() => { calculer(); majRecherche(); }, 200);
+  });
+  document.addEventListener('focusin', ev => { if (ev.target && ev.target.id === 'rech-dossier') chargerRepertoire(); });
+  A.actions['rech-assemblee'] = el => { assemblee = el.value; calculer(); majRecherche(); };
+  A.actions['suivre-repertoire'] = async el => {
+    const x = trouves.resultats[Number(el.dataset.cle)];
+    if (!x) return;
+    const ls = R.lienSenat(x), la = R.lienAN(x);
+    el.focus();
+    await C.appliquer([['AddRecord', 'Dossiers', null, { Lien: ls || la, Lien_autre: ls ? la : '', Titre: x.t, Etat: 'À analyser' }]]);
+    C.toast(`Dossier suivi : ${x.t.length > 80 ? x.t.slice(0, 79) + '…' : x.t}. Recherche de ses dates en cours.`);
+    Y.synchroniser({ manuel: false });
+  };
+
   A.vues.dossiers = {
     rendre() {
       const ds = (e.doc.Dossiers || []).slice().sort((x, y) => (x.Prochaine_date || Infinity) - (y.Prochaine_date || Infinity) || String(x.Titre || '').localeCompare(String(y.Titre || ''), 'fr'));
       const t = Math.floor(Date.now() / 1000);
       return `<div class="large"><h2 class="sr-only">Dossiers suivis</h2>
+        <section class="ag-recherche" aria-labelledby="rech-titre">
+          <h3 id="rech-titre">Chercher un dossier en cours</h3>
+          <div class="ag-ligne-saisie">
+            <label for="rech-dossier" class="sr-only">Mots du titre, ou numéro du texte</label>
+            <input id="rech-dossier" type="search" autocomplete="off" placeholder="Ex. : fin de vie, budget 2027, ppl25-123" value="${esc(recherche)}">
+            <select data-change="rech-assemblee" aria-label="Assemblée"><option value=""${assemblee ? '' : ' selected'}>Sénat et Assemblée</option><option value="senat"${assemblee === 'senat' ? ' selected' : ''}>Sénat</option><option value="an"${assemblee === 'an' ? ' selected' : ''}>Assemblée nationale</option></select>
+          </div>
+          <p class="petit discret" id="rech-etat" role="status">${esc(texteEtat())}</p>
+          <ul class="ag-resultats" id="rech-resultats">${htmlResultats()}</ul>
+        </section>
         <div class="ag-ajout-dossier">
-          <label for="lien-dossier">Lien d’un dossier législatif (Sénat ou Assemblée nationale)</label>
+          <label for="lien-dossier">Ou collez le lien d’un dossier législatif (Sénat ou Assemblée nationale)</label>
           <div class="ag-ligne-saisie">
             <input id="lien-dossier" type="url" inputmode="url" placeholder="https://www.senat.fr/dossier-legislatif/…" value="${esc(saisie)}"${erreurSaisie ? ' aria-invalid="true" aria-describedby="lien-dossier-err"' : ''}>
-            <button type="button" class="btn" data-action="suivre-dossier">Suivre ce dossier</button>
+            <button type="button" class="btn secondaire" data-action="suivre-dossier">Suivre ce dossier</button>
           </div>
           <p class="erreur-champ" id="lien-dossier-err"${erreurSaisie ? '' : ' hidden'}>${esc(erreurSaisie)}</p>
         </div>

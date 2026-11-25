@@ -43,7 +43,7 @@
   function etatRelais(toutes) {
     const relais = toutes.filter(s => s.Type === 'Flux via relais');
     const dernier = Math.max(0, ...relais.map(s => s.Relaye_le || 0));
-    const quoi = 'Le relais lit l’agenda de l’Assemblée nationale pour les dossiers suivis, et les agendas Google ou Outlook abonnés, toutes les deux heures de 6 h à 22 h.';
+    const quoi = 'Le relais synchronise tout l’agenda toutes les deux heures, de 6 h à 22 h, même si personne ne l’ouvre : Sénat, dossiers suivis, Assemblée nationale, agendas Google ou Outlook abonnés, puis agendas diffusés.';
     if (!dernier) return `${quoi} <b>Il n’est pas encore passé.</b>`;
     const age = Date.now() / 1000 - dernier;
     if (age > RELAIS_ALERTE_S) return `${quoi} <span class="texte-erreur"><b>Dernier passage ${esc(Y.depuis(dernier))}</b> : il semble arrêté.</span>`;

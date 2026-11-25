@@ -49,3 +49,24 @@ test('relais : dossier de l’Assemblée nationale suivi, réunions déposées p
   assert.ok(evs.every(e => e.Dossier === d.id || e.Dossier), 'chaque réunion rattachée à un dossier');
   assert.ok(evs.some(e => e.Fin - e.Debut !== 7200), 'heures de fin réelles (pas la durée fixe du Sénat)');
 });
+
+test('robustesse : une panne de l’Assemblée n’empêche ni la synchronisation du Sénat ni le reste ; le passage finit en échec', async () => {
+  const proprio = await client();
+  const lois = (await proprio.lignes(DOC, 'Sources', { filtre: { Nom: ['Commission des lois'] } }))[0];
+  const avant = lois.Derniere_synchro || 0;
+  let code = 0, sortie = '';
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, '..', 'relais', 'relais.mjs')], {
+      env: { ...process.env, GRIST_URL: BASE, GRIST_DOC: DOC, GRIST_API_KEY: await cle('admin@projet.test', 'Admin projet'), AN_AGENDA_ZIP: '/inexistant/Agenda.json.zip' },
+      encoding: 'utf8', timeout: 300000, stdio: 'pipe',
+    });
+  } catch (e) { code = e.status; sortie = String(e.stdout) + String(e.stderr); }
+  assert.equal(code, 1, 'passage en échec, visible dans GitHub Actions');
+  assert.match(sortie, /Synchronisation : \d+ flux lus/, 'la synchronisation a eu lieu');
+  assert.match(sortie, /Relais terminé avec des erreurs/);
+  const apres = (await proprio.lignes(DOC, 'Sources', { filtre: { Nom: ['Commission des lois'] } }))[0];
+  assert.ok(apres.Derniere_synchro > avant, 'commission des lois relue malgré la panne');
+  const an = (await proprio.lignes(DOC, 'Sources', { filtre: { Nom: ['Assemblée nationale (dossiers suivis)'] } }))[0];
+  assert.match(an.Resultat_synchro, /^⚠ Relais : agenda de l’Assemblée nationale illisible/);
+  assert.ok((await proprio.lignes(DOC, 'Evenements')).some(e => e.Source === an.id), 'événements de l’Assemblée gardés');
+});

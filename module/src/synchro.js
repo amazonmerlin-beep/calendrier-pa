@@ -1,6 +1,7 @@
-// Formulaire.synchro — la synchronisation, lancée depuis le navigateur des membres : flux iCal du Sénat
-// (lisibles par tout navigateur), contenus déposés par le relais GitHub, dossiers législatifs suivis ; import de
-// fichiers .ics. Écrit avec les droits de la personne connectée (règles d'accès).
+// Formulaire.synchro — la synchronisation vue du navigateur : état affiché, chargement d'ical.js, déclenchement à
+// l'ouverture de l'agenda, import de fichiers .ics. Le déroulé est celui du moteur commun (moteur.js), le même que
+// celui du relais GitHub, qui synchronise aussi seul toutes les deux heures. Écrit avec les droits de la personne
+// connectée (règles d'accès).
 (function (L) {
   'use strict';
   const C = L.core, S = L.sync;
@@ -8,8 +9,6 @@
   // ical.js : version figée, empreinte vérifiée avant exécution (équivalent d'un attribut integrity)
   const ICAL_URL = 'https://cdn.jsdelivr.net/npm/ical.js@2.1.0/dist/ical.min.js';
   const ICAL_SHA256 = 'SoyhZHtbk+X89f7lnErRxZcTjRCMwsfoiFT2iPcRQ20=';
-  const VERROU_S = 180;            // un poste qui synchronise bloque les autres 3 minutes au plus
-  const REVERIF_DOSSIER_S = 6 * 3600;
   const maintenant = () => Math.floor(Date.now() / 1000);
 
   let icalPromesse = null;
@@ -64,115 +63,24 @@
     document.querySelectorAll('[data-etat-synchro]').forEach(el => { el.innerHTML = htmlEtat(); });
   }
 
-  // ------------------------------------------------------------------ choix des sources
-  const dossiersSenat = dossiers => dossiers.filter(d => d.Assemblee === 'Sénat' && d.Etat !== 'Erreur');
-  /** Flux à lire : suivis, ou du Sénat quand un dossier est suivi, ou ayant encore des événements à venir (nettoyage). */
-  function cibles(sources, dossiers, evts, t) {
-    const toutSenat = dossiersSenat(dossiers).length > 0;
-    const aVenir = new Set(evts.filter(e => e.Debut >= S.debutJourParis(t) && e.UID).map(e => e.Source));
-    return sources.filter(s => {
-      if (s.Type === 'Flux via relais') return s.Active && !!s.Contenu_relaye;
-      if (s.Type !== 'Flux iCal' || !s.URL) return false;
-      return s.Active || (toutSenat && S.estFluxSenat(s.URL)) || aVenir.has(s.id);
-    });
-  }
+  // ------------------------------------------------------------------ synchronisation (moteur commun : moteur.js)
+  const M = L.moteur;
   function perimee(t = maintenant()) {
-    const doc = C.etat.doc, min = (Number(C.param('synchro_minutes', '30')) || 30) * 60;
-    const cs = cibles(doc.Sources || [], doc.Dossiers || [], doc.Evenements || [], t);
-    return cs.some(s => !s.Derniere_synchro || t - s.Derniere_synchro > min)
-      || (doc.Dossiers || []).some(d => d.Etat === 'À analyser');
+    return M.perimee(C.etat.doc, t, (Number(C.param('synchro_minutes', '30')) || 30) * 60);
   }
-
-  // ------------------------------------------------------------------ dossiers législatifs
-  async function analyserDossiers(dossiers, t, forcer) {
-    const actions = [];
-    for (const d of dossiers) {
-      if (!forcer && d.Etat !== 'À analyser' && d.Derniere_verif && t - d.Derniere_verif < REVERIF_DOSSIER_S) continue;
-      const type = S.typeLienDossier(d.Lien);
-      if (type === 'an') {
-        // Lu par le relais GitHub (l'Assemblée nationale ne se lit pas depuis un navigateur), qui note lui-même l'état
-        if (d.Etat === 'À analyser') actions.push(['UpdateRecord', 'Dossiers', d.id, { Etat: 'En attente du relais', Derniere_verif: t,
-          Resultat: 'Lu par le relais à son prochain passage (toutes les deux heures, de 6 h à 22 h).' }]);
-        continue;
-      }
-      if (type !== 'senat') {
-        actions.push(['UpdateRecord', 'Dossiers', d.id, { Etat: 'Erreur', Derniere_verif: t, Resultat: 'Lien non reconnu : coller l’adresse d’un dossier législatif du Sénat ou de l’Assemblée nationale.' }]);
-        continue;
-      }
-      majEtat(`Analyse du dossier « ${d.Titre || d.Lien} »…`);
-      try {
-        const a = S.analyserDossierSenat(await lireTexte(S.lienDossierCanonique(d.Lien)));
-        const ch = {
-          Etat: 'Suivi actif', Derniere_verif: t,
-          Numeros: a.numeros.map(S.libelleNumero).join(' · '),
-          Calendrier_annonce: a.calendrier.join('\n'),
-          Resultat: a.numeros.length ? `${a.numeros.length} texte${a.numeros.length > 1 ? 's' : ''} repéré${a.numeros.length > 1 ? 's' : ''} : leurs réunions et séances sont cherchées dans l’agenda du Sénat.`
-            : 'Aucun numéro de texte repéré sur la page : rattachez les événements à la main.',
-        };
-        if (!d.Titre && a.titre) ch.Titre = a.titre;
-        if (a.lienAN && !d.Lien_autre) ch.Lien_autre = a.lienAN;
-        actions.push(['UpdateRecord', 'Dossiers', d.id, ch]);
-      } catch (e) {
-        actions.push(['UpdateRecord', 'Dossiers', d.id, { Etat: 'Erreur', Derniere_verif: t, Resultat: 'Page du dossier illisible : ' + e.message }]);
-      }
-    }
-    if (actions.length) await grist.docApi.applyUserActions(actions);
-    return actions.length;
-  }
-  /** numéro de texte ('155/2026-2027') -> id du dossier suivi */
-  function indexNumeros(dossiers) {
-    const m = new Map();
-    for (const d of dossiersSenat(dossiers)) for (const k of S.numerosSenat(d.Numeros)) if (!m.has(k)) m.set(k, d.id);
-    return m;
-  }
-
-  // ------------------------------------------------------------------ synchronisation
   async function synchroniser({ manuel = false } = {}) {
     if (etat.enCours || !C.etat.moi || !C.etat.moi.connu) return;
     etat.enCours = true; etat.erreur = false; etat.message = '';
     majEtat('Synchronisation en cours…');
-    let bilan = null;
+    let r = null;
     try {
-      const t = maintenant();
-      let [sources, dossiers, evts] = await Promise.all(['Sources', 'Dossiers', 'Evenements'].map(C.lireTable));
-      if (await analyserDossiers(dossiers, t, manuel)) dossiers = await C.lireTable('Dossiers');
-      const cs = cibles(sources, dossiers, evts, t);
-      if (!cs.length) { bilan = 'Aucun flux à synchroniser.'; return; }
-      const occupees = cs.filter(s => s.Synchro_en_cours && t - s.Synchro_en_cours < VERROU_S);
-      if (occupees.length && !manuel) { bilan = 'Synchronisation déjà en cours sur un autre poste.'; return; }
-      try {
-        await grist.docApi.applyUserActions([['BulkUpdateRecord', 'Sources', cs.map(s => s.id), { Synchro_en_cours: cs.map(() => t) }]]);
-      } catch (e) { etat.lectureSeule = true; return; }
+      const [Sources, Dossiers, Evenements] = await Promise.all(['Sources', 'Dossiers', 'Evenements'].map(C.lireTable));
       const ICAL = await chargerIcal();
-      const numeros = indexNumeros(dossiers);
-      const ids = new Set(dossiers.map(d => d.id));
-      const dossierDe = it => {
-        if (it.dossierRelais && ids.has(it.dossierRelais)) return it.dossierRelais;
-        for (const k of S.numerosSenat(it.titre + ' ' + it.description)) if (numeros.has(k)) return numeros.get(k);
-        return null;
-      };
-      let total = 0, erreurs = 0;
-      for (const [i, s] of cs.entries()) {
-        majEtat(`Synchronisation : ${s.Nom} (${i + 1} sur ${cs.length})…`);
-        let resultat;
-        try {
-          const texte = s.Type === 'Flux via relais' ? s.Contenu_relaye : await lireTexte(s.URL);
-          const { items } = S.lireIcs(ICAL, texte, { maintenant: t });
-          const its = (S.estFluxSenat(s.URL) ? items.map(S.adapterSenat) : items).map(x => Object.assign(x, { dossier: dossierDe(x) }));
-          const retenus = s.Active ? its : its.filter(x => x.dossier);
-          const plan = S.planifier({ sourceId: s.id, items: retenus, existants: evts.filter(e => e.Source === s.id), maintenant: t, mode: 'flux',
-            flux: { nombre: its.length, horizon: its.length ? Math.max(...its.map(x => x.debut)) : 0 } });
-          const actions = S.actionsDuPlan('Evenements', plan);
-          if (actions.length) await grist.docApi.applyUserActions(actions);
-          total += plan.stats.ajoutes + plan.stats.modifies + plan.stats.supprimes + plan.stats.marques;
-          resultat = S.resumer(plan.stats) + (s.Active ? '' : ' (seulement les dossiers suivis)');
-        } catch (e) {
-          erreurs++;
-          resultat = '⚠ ' + (e && e.message ? e.message : String(e));
-        }
-        await grist.docApi.applyUserActions([['UpdateRecord', 'Sources', s.id, { Derniere_synchro: t, Resultat_synchro: resultat, Synchro_en_cours: null }]]);
-      }
-      bilan = `${cs.length} flux lus, ${total} changement${total > 1 ? 's' : ''}${erreurs ? `, ${erreurs} en erreur` : ''}.`;
+      r = await M.synchroniser(
+        { lireTexte, appliquer: actions => grist.docApi.applyUserActions(actions), etape: majEtat },
+        { Sources, Dossiers, Evenements },
+        { ICAL, maintenant: maintenant(), manuel });
+      if (r.statut === 'refuse') etat.lectureSeule = true;
     } catch (e) {
       etat.erreur = true;
       etat.message = 'Synchronisation interrompue : ' + (e && e.message ? e.message : e);
@@ -181,7 +89,7 @@
       etat.etape = '';
       if (L.app && L.app.rafraichir) L.app.rafraichir(0, { tables: ['Sources', 'Dossiers', 'Evenements'] });
       majEtat();
-      if (manuel && bilan) C.toast(bilan);
+      if (manuel && r && r.bilan) C.toast(r.bilan);
     }
   }
 

@@ -52,6 +52,23 @@ n'a pas le droit de lire. Tout ce qui est lisible depuis un navigateur se fait s
 | `Abonnements` | Diffusion : nom, agendas et dossiers inclus, niveau de détail, annulés, publié ou non ; adresse et gist écrits par le relais |
 | `Parametres`, `Annuaire`, `Connexions`, `Guides` | Socle du kit : réglages, comptes et rôles, identité dans le module, onglet Aide |
 
+## Synchronisation automatique, moteur commun
+
+Le déroulé d'une synchronisation (`module/src/moteur.js`) est le même dans le navigateur et dans le relais : analyse
+des dossiers suivis, choix des flux, lecture, plan (`sync.js`), puis **deux écritures seulement** (le verrou, puis un
+lot unique : événements, résultats, dossiers, verrous levés). Le relais GitHub le lance toutes les deux heures de 6 h à
+22 h, même sans visite ; le navigateur, à l'ouverture si la dernière lecture date de plus de 30 minutes, ou sur demande.
+Environ 60 appels à l'API Grist par jour pour le relais.
+
+## Recherche de dossiers législatifs
+
+Chaque matin, le relais construit le **répertoire des dossiers en cours** (`relais/repertoire.mjs`) à partir de l'open
+data du Sénat et de l'Assemblée : dossiers clos exclus, dossiers des deux assemblées fusionnés (≈ 3 000), thèmes du
+Sénat. Il est publié dans un gist (données publiques, lisibles depuis un navigateur) et **pas** dans Grist : l'offre
+gratuite de getgrist.com limite le nombre de lignes d'un document. Le module le charge à la première recherche et cherche
+sur place (`module/src/repertoire.js` : sans accents ni casse, mots vides ignorés, abréviations PLF, PLFSS, numéros de
+texte), puis « Suivre » ajoute le dossier avec ses deux liens.
+
 ## Diffusion vers des agendas extérieurs (`module/src/diffusion.js`, onglet Diffusion)
 
 Un **abonnement** publie une partie du calendrier à une adresse secrète, ajoutée en lecture seule dans Google Agenda
@@ -117,8 +134,8 @@ récapitulatif. Limite : Google relit un agenda abonné à son rythme (jusqu'à 
    ajouter au relais.
 4. **Noms des commissions de l'Assemblée** : le relais écrit « Commission (AN) – objet » ; la correspondance
    `organeReuniRef` → nom passe par l'open data des organes (à ajouter).
-5. **Synchronisation à l'ouverture** : sans visite, l'agenda du Sénat n'est pas relu (le relais, lui, tourne
-   seul). Piste : faire aussi lire le Sénat par le relais si l'équipe veut un agenda à jour sans visite.
+5. **Synchronisation** : automatique (relais toutes les deux heures, de 6 h à 22 h) ; la nuit, seule l'ouverture de
+   l'agenda la relance.
 6. **Diffusion** : en place (abonnements, gists secrets). Google relit un agenda abonné à son rythme (jusqu'à 24 h) :
    ce n'est pas un outil d'alerte.
 

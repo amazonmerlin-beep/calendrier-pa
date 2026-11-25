@@ -11,7 +11,7 @@ const S = globalThis.Formulaire.sync;
 const FIX = path.join(__dirname, '..', '..', 'tests', 'fixtures');
 const lire = f => fs.readFileSync(path.join(FIX, f), 'utf8');
 // Même version que celle chargée par le module (empreinte vérifiée dans synchro.js)
-const ICAL_JS = path.join(__dirname, '..', '..', 'tests', 'vendor', 'ical-2.1.0.min.mjs');
+const ICAL_JS = path.join(__dirname, '..', '..', 'vendor', 'ical-2.1.0.min.mjs');
 let ICAL;
 test.before(async () => { ICAL = (await import(pathToFileURL(ICAL_JS).href)).default; });
 
