@@ -69,6 +69,19 @@ gratuite de getgrist.com limite le nombre de lignes d'un document. Le module le 
 sur place (`module/src/repertoire.js` : sans accents ni casse, mots vides ignorés, abréviations PLF, PLFSS, numéros de
 texte), puis « Suivre » ajoute le dossier avec ses deux liens.
 
+## Accès, comptes, nouveautés, échéances
+
+- **Accès** : le document est partagé par lien public en écriture ; l'annuaire décide de tout (règles d'accès). Onglet
+  **Comptes** (administration) : lien à envoyer, ajout de comptes, rôles et désactivation confirmés (pas sur son propre
+  compte), **demandes d'accès** (table `Demandes`, jamais l'annuaire : une écriture dans l'annuaire recharge le document
+  de tous). Un visiteur non connecté voit « Se connecter » (lien `next` relatif) ; une personne connectée hors annuaire,
+  « Demander l'accès » ; son écran s'ouvre de lui-même une fois l'accès accordé (veille).
+- **Quoi de neuf** : depuis la connexion précédente du compte (`Connexions`), les événements à venir ajoutés, modifiés,
+  annulés ou retirés par d'autres, et les échéances des 7 jours.
+- **Délais limites** (séance publique du Sénat) : le relais lit l'API de l'agenda du Sénat (fermée aux navigateurs),
+  garde les délais liés aux amendements et les rattache au dossier suivi dont la séance parle ; source « Délais limites
+  du Sénat », non suivie par défaut, donc seulement ceux des dossiers suivis. Les commissions ne les publient pas.
+
 ## Diffusion vers des agendas extérieurs (`module/src/diffusion.js`, onglet Diffusion)
 
 Un **abonnement** publie une partie du calendrier à une adresse secrète, ajoutée en lecture seule dans Google Agenda
@@ -130,8 +143,7 @@ récapitulatif. Limite : Google relit un agenda abonné à son rythme (jusqu'à 
 2. **Rapprochement des dossiers du Sénat par numéro de texte** : une réunion qui ne cite pas le numéro (« PLF pour
    2027 – Examen des amendements ») n'est pas rattachée seule ; rattachement à la main dans la fiche. Piste :
    l'API JSON du Sénat, par le relais.
-3. **Délais limites de dépôt des amendements** : publiés par l'API JSON du Sénat (fermée au navigateur) : à
-   ajouter au relais.
+3. **Délais limites** : séance publique seulement (les commissions ne les publient pas sous une forme exploitable).
 4. **Noms des commissions de l'Assemblée** : le relais écrit « Commission (AN) – objet » ; la correspondance
    `organeReuniRef` → nom passe par l'open data des organes (à ajouter).
 5. **Synchronisation** : automatique (relais toutes les deux heures, de 6 h à 22 h) ; la nuit, seule l'ouverture de

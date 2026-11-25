@@ -6,7 +6,9 @@ resume: Consulter la semaine ou le mois, ajouter et modifier un événement, sui
 ---
 ## Consulter
 
-L’agenda s’ouvre sur la semaine en cours. **Mois** affiche le mois entier ; un clic sur un jour revient à sa semaine. Les flèches changent de période, **Aujourd’hui** y revient.
+L’agenda s’ouvre sur la semaine en cours. **Mois** affiche le mois entier ; un clic sur un jour revient à sa semaine. **Liste** déroule les 30 prochains jours, jour par jour (pratique sur un petit écran ou pour imprimer). Les flèches changent de période, **Aujourd’hui** y revient.
+
+**Quoi de neuf**, en tête de l’agenda : ce qui a changé depuis votre dernière visite (événements ajoutés, modifiés, annulés ou retirés par un collègue ou par la synchronisation), et les échéances des 7 prochains jours. Un clic déplie le détail ; chaque ligne ouvre la fiche.
 
 Chaque couleur correspond à un agenda : séance publique, commission des lois, délégation aux entreprises, saisies de l’équipe, imports. Les boutons au-dessus de l’agenda masquent ou réaffichent un agenda.
 
@@ -36,6 +38,10 @@ La synchronisation lit la page du dossier, repère les numéros de ses textes et
 Une réunion qui ne cite pas le numéro du texte n’est pas trouvée : rattachez-la à la main (champ **Dossier législatif** de l’événement).
 
 Un dossier de l’Assemblée nationale (par exemple `https://www.assemblee-nationale.fr/dyn/17/dossiers/PLF_2027`) est lu par le **relais**, toutes les deux heures de 6 h à 22 h : il y retrouve toutes les réunions de commission et séances qui citent le dossier, avec leurs vraies heures de fin. Un dossier du Sénat dont la page renvoie vers l’Assemblée est suivi des deux côtés. La fiche du dossier indique le nombre de réunions, la dernière et la prochaine date.
+
+## Délais limites de dépôt des amendements
+
+Les délais limites de la **séance publique** du Sénat (dépôt des amendements, des sous-amendements, ajout de signataires) apparaissent comme des **échéances** (cadre en tirets, mention « Échéance ») : par défaut, seulement ceux des dossiers suivis ; l’administration peut les afficher tous en suivant l’agenda « Délais limites du Sénat » (onglet Sources et imports). Ils sont relus toutes les deux heures. Les commissions du Sénat ne publient pas leurs délais sous une forme exploitable : ils n’y sont pas.
 
 ## Importer une invitation Outlook ou Google
 

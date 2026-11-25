@@ -13,13 +13,16 @@
   /**
    * Flux à lire : suivis ; ceux du Sénat quand un dossier du Sénat est suivi (ses réunions peuvent être dans n'importe
    * quelle instance) ; ceux qui ont encore des événements à venir (nettoyage après un arrêt de suivi) ; les flux
-   * relayés suivis qui ont un contenu.
+   * relayés qui ont un contenu, suivis ou dès qu'un dossier est suivi (seuls ses événements sont alors gardés).
    */
   function cibles(sources, dossiers, evts, t, contenus) {
     const toutSenat = dossiersSenat(dossiers).length > 0;
+    const suivis = dossiers.some(d => d.Etat !== 'Erreur');
     const aVenir = new Set(evts.filter(e => e.Debut >= S.debutJourParis(t) && e.UID).map(e => e.Source));
     return sources.filter(s => {
-      if (s.Type === 'Flux via relais') return s.Active && !!((contenus && contenus.get(s.id)) || s.Contenu_relaye);
+      // Flux relayé non suivi : lu quand même s'il y a des dossiers suivis (il n'en garde que leurs événements :
+      // délais limites des dossiers suivis), ou pour retirer ses événements à venir
+      if (s.Type === 'Flux via relais') return !!((contenus && contenus.get(s.id)) || s.Contenu_relaye) && (s.Active || suivis || aVenir.has(s.id));
       if (s.Type !== 'Flux iCal' || !s.URL) return false;
       return s.Active || (toutSenat && S.estFluxSenat(s.URL)) || aVenir.has(s.id);
     });

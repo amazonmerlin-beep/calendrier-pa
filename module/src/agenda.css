@@ -1,27 +1,33 @@
-/* Calendrier PA : agenda (semaine, mois), dossiers suivis, sources. Classes préfixées « ag- ». */
-.ag { display: flex; flex-direction: column; gap: 12px; }
+/* Calendrier PA : agenda (semaine, mois, liste), quoi de neuf, dossiers, sources, diffusion, comptes. Classes « ag- ».
+   Couleurs des agendas : fond teinté et liseré de la couleur (--c) ; le texte reste sombre (contraste 4,5:1). */
+.ag { display: flex; flex-direction: column; gap: 14px; }
 .contenu:has(.ag) { max-width: none; }
+.ag { --ag-teinte: 11%; --ag-rayon: 8px; }
 
 /* Bandeau : ligne au-dessus du titre (le kit ne la met pas en forme ; masquée en petite largeur par ui.css) */
 @media (min-width: 761px) and (min-height: 561px) {
   .bandeau-sur { display: block; font-size: 12px; font-weight: 400; letter-spacing: .04em; text-transform: uppercase; color: var(--c-texte-2); }
 }
 
-/* Barre : navigation à gauche, affichage et création à droite */
+/* Barre : navigation (contrôle groupé) et titre à gauche ; affichage et création à droite */
 .ag-barre { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-.ag-nav, .ag-outils { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.ag-titre { margin: 0 0 0 8px; font-size: 20px; font-weight: 600; }
-.ag-modes { display: inline-flex; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); overflow: hidden; }
-.ag-modes button { border: 0; background: var(--c-fond); padding: 6px 14px; min-height: 32px; cursor: pointer; }
-.ag-modes button + button { border-left: 1px solid var(--c-bordure-champ); }
+.ag-nav, .ag-outils { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.ag-titre { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; }
+.ag-groupe-nav, .ag-modes { display: inline-flex; border: 1px solid var(--c-bordure-champ); border-radius: var(--rayon); overflow: hidden; background: var(--c-fond); }
+.ag-groupe-nav button, .ag-modes button { border: 0; background: transparent; padding: 6px 14px; min-height: 34px; cursor: pointer; color: var(--c-texte); }
+.ag-groupe-nav button + button, .ag-modes button + button { border-left: 1px solid var(--c-bordure-champ); }
+.ag-groupe-nav button:hover, .ag-modes button:hover { background: var(--c-fond-alt); }
+.ag-groupe-nav [data-pas] { font-size: 18px; line-height: 1; padding: 6px 12px; }
 .ag-modes button[aria-pressed="true"] { background: var(--c-action); color: #FFFFFF; }
 
-/* Filtres : un bouton par agenda, avec sa couleur */
+/* Filtres : un bouton par agenda, avec sa couleur ; l'état de la synchronisation à droite */
 .ag-filtres { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.ag-filtres .ag-synchro { margin-left: auto; }
 .ag-agendas { display: flex; flex-wrap: wrap; gap: 6px; }
-.ag-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 2px 10px; border: 1px solid var(--c-bordure-champ);
-  border-radius: 999px; background: var(--c-fond); color: var(--c-texte); font-size: 13px; cursor: pointer; }
-.ag-chip[aria-pressed="false"] { color: var(--c-texte-3); text-decoration: line-through; background: var(--c-fond-alt); }
+.ag-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 2px 10px; border: 1px solid var(--c-bordure);
+  border-radius: 999px; background: color-mix(in srgb, var(--c) 8%, var(--c-fond)); color: var(--c-texte); font-size: 13px; cursor: pointer; }
+.ag-chip:hover { border-color: var(--c); }
+.ag-chip[aria-pressed="false"] { color: var(--c-texte-3); text-decoration: line-through; background: var(--c-fond); }
 .ag-chip[aria-pressed="false"] .ag-pastille { background: transparent; box-shadow: inset 0 0 0 2px var(--c); }
 .ag-chip.statique { cursor: default; }
 .ag-pastille { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; vertical-align: middle; }
@@ -30,43 +36,84 @@
 .ag-synchro-texte.en-cours { color: var(--c-action); }
 .ag-synchro-texte.erreur, .texte-erreur { color: var(--c-erreur); }
 
-/* Semaine : sept colonnes ; les jours de fin de semaine vides se resserrent */
-.ag-semaine { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)) repeat(2, minmax(110px, .7fr)); gap: 8px; align-items: start; }
-.ag-jour { border: 1px solid var(--c-bordure); border-radius: 6px; background: var(--c-fond); min-height: 160px; display: flex; flex-direction: column; }
-.ag-jour.weekend { background: var(--c-fond-alt); }
-.ag-jour.aujourdhui { border-color: var(--c-action); box-shadow: inset 0 3px 0 var(--c-action); }
-.ag-jour h3 { margin: 0; padding: 8px 10px 6px; font-size: 14px; font-weight: 600; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 6px; }
-.ag-auj { font-size: 11px; font-weight: 600; text-transform: none; color: var(--c-action); }
-.ag-liste { list-style: none; margin: 0; padding: 0 6px; display: flex; flex-direction: column; gap: 6px; }
-.ag-rien { margin: 0; padding: 0 10px; font-size: 13px; color: var(--c-texte-3); }
-.ag-ajout { margin: auto 6px 6px; padding: 4px; border: 1px dashed var(--c-bordure); border-radius: var(--rayon); background: transparent;
-  color: var(--c-texte-2); font-size: 13px; cursor: pointer; opacity: 0; min-height: 24px; }
-.ag-jour:hover .ag-ajout, .ag-ajout:focus-visible { opacity: 1; }
+/* Quoi de neuf : une ligne repliée ; le détail par groupe */
+.ag-nouveautes { border: 1px solid var(--c-bordure); border-radius: var(--ag-rayon); background: var(--c-fond-alt); }
+.ag-nouveautes.avec { border-color: color-mix(in srgb, var(--c-action) 45%, var(--c-bordure)); background: var(--c-action-clair); }
+.ag-nouveautes summary { padding: 10px 14px; cursor: pointer; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.ag-nv-titre { font-weight: 600; }
+.ag-nv-resume { color: var(--c-texte-2); }
+.ag-nv-corps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4px 24px; padding: 0 14px 12px; }
+.ag-nv-groupe h4 { margin: 8px 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--c-texte-2); }
+.ag-nv-groupe ul { list-style: none; margin: 0; padding: 0; }
+.ag-nv-groupe li { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; }
+.ag-nv-groupe .btn.lien { text-align: left; }
 
-/* Événement : couleur de son agenda, texte blanc (couleurs choisies pour un contraste de 4,5:1 au moins) */
-.ag-evt { display: block; width: 100%; text-align: left; border: 0; border-radius: var(--rayon); padding: 6px 8px; cursor: pointer;
-  background: var(--c); color: #FFFFFF; font-size: 13px; line-height: 1.35; }
-.ag-evt:hover { filter: brightness(1.12); }
+/* En-tête d'un jour : jour de la semaine, grand numéro ; aujourd'hui entouré */
+.ag-jtete { margin: 0; display: flex; align-items: center; gap: 8px; }
+.ag-jsem { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-texte-2); }
+.ag-jnum { font-size: 20px; font-weight: 600; line-height: 32px; min-width: 32px; height: 32px; text-align: center; border-radius: 50%; }
+.aujourdhui .ag-jtete .ag-jnum, .ag-mois td.aujourdhui .ag-num { background: var(--c-action); color: #FFFFFF; }
+.ag-auj { font-size: 11px; font-weight: 600; color: var(--c-action); }
+
+/* Semaine : sept colonnes, la fin de semaine plus étroite ; jours passés estompés */
+.ag-semaine { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)) repeat(2, minmax(110px, .7fr)); gap: 10px; align-items: start; }
+.ag-jour { border: 1px solid var(--c-bordure); border-radius: var(--ag-rayon); background: var(--c-fond); min-height: 180px; display: flex; flex-direction: column; padding-bottom: 6px; }
+.ag-jour > .ag-jtete { padding: 8px 10px; border-bottom: 1px solid var(--c-filet); margin-bottom: 8px; }
+.ag-jour.weekend { background: var(--c-fond-alt); }
+.ag-jour.aujourdhui { border-color: var(--c-action); box-shadow: 0 0 0 1px var(--c-action); }
+/* Jours passés : teinte et liseré estompés, texte gardé à pleine lisibilité (pas d'opacité : contraste 4,5:1) */
+.ag-jour.passe .ag-evt:not(:hover) { background: color-mix(in srgb, var(--c) 4%, var(--c-fond)); border-color: var(--c-filet);
+  border-left-color: color-mix(in srgb, var(--c) 45%, var(--c-fond)); }
+.ag-liste { list-style: none; margin: 0; padding: 0 8px; display: flex; flex-direction: column; gap: 6px; }
+.ag-rien { margin: 0; padding: 0 10px; font-size: 13px; color: var(--c-texte-3); }
+.ag-ajout { margin: auto 8px 0; padding: 4px; border: 1px dashed transparent; border-radius: var(--rayon); background: transparent;
+  color: var(--c-texte-2); font-size: 13px; cursor: pointer; min-height: 26px; opacity: 0; transition: opacity .15s; }
+.ag-jour:hover .ag-ajout, .ag-ajout:focus-visible { opacity: 1; border-color: var(--c-bordure); }
+
+/* Événement : fond teinté et liseré de la couleur de son agenda */
+.ag-evt { display: block; width: 100%; text-align: left; border: 1px solid color-mix(in srgb, var(--c) 28%, transparent); border-left: 4px solid var(--c);
+  border-radius: 6px; padding: 6px 8px 7px; cursor: pointer; background: color-mix(in srgb, var(--c) var(--ag-teinte), var(--c-fond));
+  color: var(--c-texte); font-size: 13px; line-height: 1.35; transition: background .12s, box-shadow .12s; }
+.ag-evt:hover { background: color-mix(in srgb, var(--c) 20%, var(--c-fond)); box-shadow: 0 1px 3px rgba(30, 33, 36, .12); }
 .ag-evt:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }
-.ag-heure { font-weight: 600; font-variant-numeric: tabular-nums; }
-.ag-evt-titre { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-.ag-evt-src { display: block; margin-top: 2px; font-size: 12px; opacity: .92; }
-.ag-evt.ag-annule { background: var(--c-fond-alt); color: var(--c-texte-2); box-shadow: inset 3px 0 0 var(--c); }
-.ag-evt.ag-annule .ag-evt-titre { text-decoration: line-through; }
-.ag-evt.compact { padding: 2px 6px; font-size: 12px; }
-.ag-evt.compact .ag-evt-titre { display: inline; -webkit-line-clamp: unset; }
-.ag-evt.compact { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ag-heure { display: block; font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--c-texte-2); }
+.ag-evt-titre { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-weight: 600; }
+.ag-evt-src { display: block; margin-top: 3px; font-size: 12px; color: var(--c-texte-2); }
+.ag-etiquette { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  background: var(--c); color: #FFFFFF; vertical-align: 1px; }
+/* Échéance (délai limite) : cadre en tirets, pas un créneau de réunion */
+.ag-evt.ag-echeance { border-style: dashed; border-left-style: solid; background: color-mix(in srgb, var(--c) 7%, var(--c-fond)); }
+.ag-evt.ag-annule { background: var(--c-fond-alt); color: var(--c-texte-2); border-color: var(--c-bordure); border-left-color: var(--c-bordure-champ); }
+.ag-evt.ag-annule .ag-evt-titre { text-decoration: line-through; font-weight: 400; }
+.ag-evt.compact { padding: 2px 6px; font-size: 12px; border-left-width: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ag-evt.compact .ag-heure { display: inline; font-size: 11px; }
+.ag-evt.compact .ag-etiquette { display: none; }
+.ag-evt.compact .ag-evt-titre { display: inline; -webkit-line-clamp: unset; font-weight: 500; }
 
 /* Mois */
-.ag-mois { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 760px; }
-.ag-mois th { padding: 6px; font-size: 13px; font-weight: 600; text-transform: capitalize; color: var(--c-texte-2); text-align: left; }
-.ag-mois td { border: 1px solid var(--c-bordure); vertical-align: top; height: 118px; padding: 4px; }
+.ag-mois { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; min-width: 760px; border: 1px solid var(--c-bordure); border-radius: var(--ag-rayon); overflow: hidden; }
+.ag-mois th { padding: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-texte-2); text-align: left; background: var(--c-fond-alt); border-bottom: 1px solid var(--c-bordure); }
+.ag-mois td { border-right: 1px solid var(--c-filet); border-bottom: 1px solid var(--c-filet); vertical-align: top; height: 124px; padding: 4px 6px; }
+.ag-mois td.weekend { background: color-mix(in srgb, var(--c-fond-alt) 60%, var(--c-fond)); }
 .ag-mois td.hors { background: var(--c-fond-alt); }
 .ag-mois td.hors .ag-num { color: var(--c-texte-3); }
-.ag-mois td.aujourdhui { box-shadow: inset 0 3px 0 var(--c-action); }
 .ag-mois .ag-liste { padding: 0; gap: 3px; }
-.ag-num { border: 0; background: transparent; font-weight: 600; font-size: 13px; min-width: 28px; min-height: 24px; border-radius: var(--rayon); cursor: pointer; }
+.ag-num { border: 0; background: transparent; font-weight: 600; font-size: 13px; min-width: 26px; height: 26px; border-radius: 50%; cursor: pointer; margin-bottom: 2px; }
 .ag-num:hover { background: var(--c-fond-alt); }
+.ag-plus { border: 0; background: transparent; color: var(--c-action); font-size: 12px; padding: 2px 4px; cursor: pointer; min-height: 24px; }
+.ag-plus:hover { text-decoration: underline; }
+
+/* Liste : un jour par ligne de temps */
+.ag-vliste { display: flex; flex-direction: column; gap: 4px; max-width: 1000px; }
+.ag-ljour { display: grid; grid-template-columns: 150px 1fr; gap: 0 16px; padding: 12px 0; border-bottom: 1px solid var(--c-filet); }
+.ag-ldate { display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+.ag-ljour .ag-jtete { flex-wrap: wrap; gap: 4px 8px; }
+.ag-lmois { font-size: 12px; color: var(--c-texte-3); padding-left: 2px; }
+.ag-lignes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ag-evt.ag-ligne-evt { display: grid; grid-template-columns: 110px 1fr; gap: 12px; align-items: baseline; padding: 8px 12px; }
+.ag-ligne-evt .ag-heure { font-size: 13px; }
+.ag-ligne-evt .ag-evt-titre { -webkit-line-clamp: 3; }
+.ag-vide { color: var(--c-texte-3); padding: 24px 0; }
 
 /* Fiche et formulaire (fenêtres) */
 .ag-fiche-quand { margin-top: 0; }
@@ -89,13 +136,6 @@
 .statut-erreur { background: var(--c-erreur-fond); color: var(--c-erreur); }
 .ag-sources { list-style: none; padding: 0; margin: 0 0 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 6px 16px; }
 
-/* Petite largeur (et zoom à 200 %) : un jour sous l'autre, les jours de fin de semaine vides masqués */
-@media (max-width: 900px) {
-  .ag-semaine { grid-template-columns: 1fr; }
-  .ag-jour { min-height: 0; }
-  .ag-jour.vide { display: none; }
-  .ag-ajout { opacity: 1; }
-}
 
 /* Diffusion : cases groupées, niveaux, adresse publiée */
 .ag-cases { border: 1px solid var(--c-bordure); border-radius: 6px; padding: 8px 12px 10px; margin: 0 0 10px;
@@ -117,3 +157,21 @@
 .ag-resultat { border: 1px solid var(--c-bordure); border-radius: 6px; padding: 10px 12px; }
 .ag-resultat p { margin: 0 0 4px; }
 .ag-resultat-titre { font-weight: 600; }
+
+/* Petite largeur (et zoom à 200 %) : un jour sous l'autre, les fins de semaine vides masquées, liste resserrée */
+@media (max-width: 900px) {
+  .ag-semaine { grid-template-columns: 1fr; }
+  .ag-jour { min-height: 0; }
+  .ag-jour.vide { display: none; }
+  .ag-ajout { opacity: 1; }
+  .ag-filtres .ag-synchro { margin-left: 0; }
+  .ag-ljour { grid-template-columns: 1fr; }
+  .ag-ldate { flex-direction: row; align-items: center; gap: 8px; }
+  .ag-lignes { margin-top: 6px; }
+  .ag-evt.ag-ligne-evt { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* Comptes et accès */
+.ag-accueil-inconnu .btn { display: inline-flex; align-items: center; text-decoration: none; }
+.tableau tr.inactif td { color: var(--c-texte-3); }
+.ag-accueil-inconnu textarea { width: 100%; }

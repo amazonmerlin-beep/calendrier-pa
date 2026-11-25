@@ -10,6 +10,8 @@ const PROPRIO = 'user.Access in [OWNER]';
 const ROLE = 'user.Moi.Role_effectif';
 const CONNU = `${ROLE} in ["membre", "admin"]`;
 const ADMIN = `${ROLE} == "admin"`;
+// Visiteur non connecté d'un document partagé par lien public
+const ANONYME = 'user.Email == "anon@getgrist.com"';
 const { SYNC_AUTEUR, STATUTS_EVT, ETATS_DOSSIER, DIFFUSION_EVT, NIVEAUX_DIFFUSION } = require('./modele');
 const ATTRIBUT_MOI = { name: 'Moi', tableId: 'Annuaire', lookupColId: 'Email', charId: 'Email' };
 
@@ -19,7 +21,9 @@ function jeux() {
       table: '*', colonnes: '*', attribut: ATTRIBUT_MOI,
       regles: [
         [PROPRIO, '+CRUDS', 'Propriétaires : tout'],
-        ['', '-CRUDS', 'Tous les autres : rien par défaut (chaque table ouvre ce qu’il faut)'],
+        // Jamais de condition vide ici : la page « Règles d'accès » de Grist ajoute ses règles intégrées après
+        // celles du document ; une condition vide n'y serait plus la dernière (« La condition ne peut pas être vide »)
+        [`not (${PROPRIO})`, '-CRUDS', 'Tous les autres : rien par défaut (chaque table ouvre ce qu’il faut)'],
       ],
     },
     {
@@ -43,6 +47,7 @@ function jeux() {
       regles: [
         [PROPRIO, '+CRUD'],
         ['newRec.Nom != user.Name', '-C', 'Le nom vient de la session, pas de la saisie'],
+        [ANONYME, '-C', 'Visiteur non connecté : il doit se connecter'],
         [ADMIN, '+R-UD', 'Admin : lit toutes les connexions'],
         ['rec.Email == user.Email', '+CR-UD', 'Chacun crée et lit ses propres connexions (identité du module)'],
         ['', '-CRUD'],
@@ -125,6 +130,22 @@ function jeux() {
         [`${ADMIN} and newRec.Niveau not in [None, "", ${NIVEAUX_DIFFUSION.map(x => `"${x}"`).join(', ')}]`, '-CU', 'Niveau de détail : valeurs de la liste seulement'],
         [`${ADMIN} and newRec.Cree_par == user.Email`, '+C', 'Admin : crée un abonnement en son nom'],
         [ADMIN, '+RUD', 'Admin : gère les abonnements (le relais publie sous un compte admin)'],
+        ['', '-CRUD'],
+      ],
+    },
+    // Demandes d'accès : une personne connectée hors annuaire demande un accès ; l'administration l'accorde ou le refuse
+    {
+      table: 'Demandes', colonnes: 'Email,Nom,Le',
+      regles: [[PROPRIO, '+RU'], ['', '-U', 'Colonnes système : jamais modifiées à la main']],
+    },
+    {
+      table: 'Demandes', colonnes: '*',
+      regles: [
+        [PROPRIO, '+CRUD'],
+        [ADMIN, '+RUD-C', 'Admin : traite les demandes'],
+        [`not (${ANONYME}) and not (${CONNU}) and newRec.Email == user.Email and newRec.Statut == "En attente" and not newRec.Traite_par`, '+C',
+          'Une personne connectée, hors annuaire, demande un accès en son nom'],
+        ['rec.Email == user.Email', '+R-UD', 'Chacun lit ses propres demandes'],
         ['', '-CRUD'],
       ],
     },

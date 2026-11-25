@@ -1,4 +1,5 @@
-// Vue Agenda : semaine (par défaut) ou mois ; fiche d'un événement ; création et modification.
+// Vue Agenda : semaine (par défaut), mois ou liste de 30 jours ; « Quoi de neuf » depuis la dernière visite ;
+// fiche d'un événement ; création et modification.
 (function (L) {
   'use strict';
   const C = L.core, A = L.app, S = L.sync, Y = L.synchro, esc = C.esc, e = C.etat;
@@ -30,12 +31,20 @@
   const jourLong = k => F_JOUR_LONG.format(new Date(versUtc(k)));
   const heure = sec => F_HEURE.format(new Date(sec * 1000));
 
+  const JOURS_LISTE = 30;
+  const F_JSEM = fmt({ weekday: 'short' });
+  const moisNom = k => fmt({ month: 'long' }).format(new Date(versUtc(k)));
+  const premier = j => (j === 1 ? '1er' : String(j));
   function titrePeriode(mode, ancre) {
     if (mode === 'mois') return majuscule(F_MOIS.format(new Date(versUtc(ancre))));
+    if (mode === 'liste') {
+      const f = ajouterJours(ancre, JOURS_LISTE - 1);
+      const [aa, , ja] = ancre.split('-').map(Number), [af, , jf] = f.split('-').map(Number);
+      return `Du ${premier(ja)} ${moisNom(ancre)}${aa !== af ? ' ' + aa : ''} au ${premier(jf)} ${moisNom(f)} ${af}`;
+    }
     const l = lundi(ancre), d = ajouterJours(l, 6);
     const [, ml, jl] = l.split('-').map(Number), [ad, md, jd] = d.split('-').map(Number);
-    const moisNom = k => fmt({ month: 'long' }).format(new Date(versUtc(k)));
-    return ml === md ? `Semaine du ${jl} au ${jd} ${moisNom(d)} ${ad}` : `Semaine du ${jl} ${moisNom(l)} au ${jd} ${moisNom(d)} ${ad}`;
+    return ml === md ? `Semaine du ${premier(jl)} au ${jd} ${moisNom(d)} ${ad}` : `Semaine du ${premier(jl)} ${moisNom(l)} au ${premier(jd)} ${moisNom(d)} ${ad}`;
   }
 
   // ------------------------------------------------------------------ données
@@ -45,9 +54,14 @@
   const nomSource = ev => (source(ev.Source) || {}).Nom || 'Saisie manuelle';
   const dossier = id => (e.doc.Dossiers || []).find(d => d.id === id) || null;
   const estAnnule = ev => !!ev.Statut;
+  // Délais limites (relais) : des échéances, pas des réunions
+  const SOURCE_DELAIS = 'Délais limites du Sénat';
+  const estEcheance = ev => nomSource(ev) === SOURCE_DELAIS;
+  const titreAffiche = ev => String(ev.Titre || '(Sans titre)').replace(/^Délai : /, '');
+  const MODES = ['semaine', 'mois', 'liste'];
   const arg = () => {
     const a = e.arg || {};
-    return { mode: a.mode === 'mois' ? 'mois' : 'semaine', date: valide(a.date) ? a.date : aujourdhui(), masques: a.masques || [], annules: a.annules !== false, dossier: a.dossier || null };
+    return { mode: MODES.includes(a.mode) ? a.mode : 'semaine', date: valide(a.date) ? a.date : aujourdhui(), masques: a.masques || [], annules: a.annules !== false, dossier: a.dossier || null };
   };
   function evenementsEntre(debut, fin, a) {
     return (e.doc.Evenements || []).filter(ev => typeof ev.Debut === 'number'
@@ -58,13 +72,26 @@
   const duJour = (evs, k) => { const d = debutJour(k), f = debutJour(ajouterJours(k, 1)); return evs.filter(ev => ev.Debut < f && Math.max(ev.Fin || ev.Debut, ev.Debut + 1) > d); };
 
   // ------------------------------------------------------------------ rendu
+  function quandCourt(ev, k) {
+    if (ev.Journee_entiere) return 'Journée';
+    return k && ev.Debut < debutJour(k) ? 'Suite' : heure(ev.Debut);
+  }
+  function classes(ev, compact) {
+    return `ag-evt${estEcheance(ev) ? ' ag-echeance' : ''}${estAnnule(ev) ? ' ag-annule' : ''}${compact ? ' compact' : ''}`;
+  }
+  const etatLu = ev => (ev.Statut ? `<span class="sr-only"> (${esc(ev.Statut)})</span>` : '');
   function puce(ev, k, compact) {
-    const suite = ev.Debut < debutJour(k);
-    const quand = ev.Journee_entiere ? 'Journée' : suite ? 'Suite' : heure(ev.Debut);
-    const etat = ev.Statut ? `<span class="sr-only"> (${esc(ev.Statut)})</span>` : '';
-    return `<li><button type="button" class="ag-evt${estAnnule(ev) ? ' ag-annule' : ''}${compact ? ' compact' : ''}" style="--c:${couleur(ev)}" data-action="ag-voir" data-id="${ev.id}">
-      <span class="ag-heure">${esc(quand)}</span> <span class="ag-evt-titre">${esc(ev.Titre || '(Sans titre)')}</span>${etat}
+    const ech = estEcheance(ev);
+    return `<li><button type="button" class="${classes(ev, compact)}" style="--c:${couleur(ev)}" data-action="ag-voir" data-id="${ev.id}">
+      <span class="ag-heure">${esc(quandCourt(ev, k))}${ech ? ' <span class="ag-etiquette">Échéance</span>' : ''}</span>
+      <span class="ag-evt-titre">${esc(titreAffiche(ev))}</span>${etatLu(ev)}
       ${compact ? '' : `<span class="ag-evt-src">${esc(nomSource(ev))}${ev.Lieu ? ' · ' + esc(ev.Lieu) : ''}</span>`}</button></li>`;
+  }
+  function enteteJour(k, idPrefixe) {
+    const auj = k === aujourdhui();
+    return `<h3 id="${idPrefixe}-${k}" class="ag-jtete"><span class="sr-only">${esc(jourLong(k))}${auj ? ', aujourd’hui' : ''}</span>
+      <span class="ag-jsem" aria-hidden="true">${esc(F_JSEM.format(new Date(versUtc(k))).replace('.', ''))}</span>
+      <span class="ag-jnum" aria-hidden="true">${Number(k.slice(8))}</span>${auj ? '<span class="ag-auj" aria-hidden="true">Aujourd’hui</span>' : ''}</h3>`;
   }
 
   function vueSemaine(a) {
@@ -74,10 +101,10 @@
     return { evs, html: `<div class="ag-semaine">${jours.map((k, i) => {
       const liste = duJour(evs, k);
       const we = i >= 5;
-      return `<section class="ag-jour${k === auj ? ' aujourdhui' : ''}${we ? ' weekend' : ''}${we && !liste.length ? ' vide' : ''}" aria-labelledby="j-${k}">
-        <h3 id="j-${k}"><span>${esc(jourCourt(k))}</span>${k === auj ? '<span class="ag-auj">Aujourd’hui</span>' : ''}</h3>
+      return `<section class="ag-jour${k === auj ? ' aujourdhui' : ''}${k < auj ? ' passe' : ''}${we ? ' weekend' : ''}${we && !liste.length ? ' vide' : ''}" aria-labelledby="j-${k}">
+        ${enteteJour(k, 'j')}
         ${liste.length ? `<ul class="ag-liste">${liste.map(ev => puce(ev, k)).join('')}</ul>` : '<p class="ag-rien">Rien de prévu</p>'}
-        <button type="button" class="ag-ajout" data-action="ag-nouveau" data-date="${k}">Ajouter<span class="sr-only"> un événement le ${esc(jourLong(k))}</span></button>
+        <button type="button" class="ag-ajout" data-action="ag-nouveau" data-date="${k}">+ Ajouter<span class="sr-only"> un événement le ${esc(jourLong(k))}</span></button>
       </section>`;
     }).join('')}</div>` };
   }
@@ -87,16 +114,15 @@
     const n = Math.ceil((versUtc(suiv) - versUtc(l)) / JOUR_MS / 7);
     const evs = evenementsEntre(debutJour(l), debutJour(ajouterJours(l, n * 7)), a);
     const auj = aujourdhui();
-    const entetes = [...Array(7)].map((_, i) => fmt({ weekday: 'short' }).format(new Date(versUtc(ajouterJours(l, i)))));
+    const entetes = [...Array(7)].map((_, i) => F_JSEM.format(new Date(versUtc(ajouterJours(l, i)))).replace('.', ''));
     let corps = '';
     for (let s = 0; s < n; s++) {
       corps += '<tr>' + [...Array(7)].map((_, i) => {
         const k = ajouterJours(l, s * 7 + i), liste = duJour(evs, k), hors = k.slice(0, 7) !== p.slice(0, 7);
-        const j = Number(k.slice(8));
-        return `<td class="${hors ? 'hors' : ''}${k === auj ? ' aujourdhui' : ''}">
-          <button type="button" class="ag-num" data-action="ag-jour" data-date="${k}"><span aria-hidden="true">${j}</span><span class="sr-only">${esc(jourLong(k))} : voir la semaine</span></button>
+        return `<td class="${hors ? 'hors' : ''}${k === auj ? ' aujourdhui' : ''}${i >= 5 ? ' weekend' : ''}">
+          <button type="button" class="ag-num" data-action="ag-jour" data-date="${k}"><span aria-hidden="true">${Number(k.slice(8))}</span><span class="sr-only">${esc(jourLong(k))} : voir la semaine</span></button>
           ${liste.length ? `<ul class="ag-liste">${liste.slice(0, 3).map(ev => puce(ev, k, true)).join('')}</ul>` : ''}
-          ${liste.length > 3 ? `<button type="button" class="btn lien petit" data-action="ag-jour" data-date="${k}">+ ${liste.length - 3} autre${liste.length > 4 ? 's' : ''}<span class="sr-only"> le ${esc(jourLong(k))}</span></button>` : ''}
+          ${liste.length > 3 ? `<button type="button" class="ag-plus" data-action="ag-jour" data-date="${k}">+ ${liste.length - 3} autre${liste.length > 4 ? 's' : ''}<span class="sr-only"> le ${esc(jourLong(k))}</span></button>` : ''}
         </td>`;
       }).join('') + '</tr>';
     }
@@ -104,39 +130,100 @@
       <thead><tr>${entetes.map(x => `<th scope="col">${esc(x)}</th>`).join('')}</tr></thead><tbody>${corps}</tbody></table></div>` };
   }
 
+  // Liste : les 30 jours à partir de la date choisie, jour par jour (lisible sur un petit écran, imprimable)
+  function vueListe(a) {
+    const d0 = a.date, jours = [...Array(JOURS_LISTE)].map((_, i) => ajouterJours(d0, i));
+    const evs = evenementsEntre(debutJour(d0), debutJour(ajouterJours(d0, JOURS_LISTE)), a);
+    const auj = aujourdhui();
+    const blocs = jours.map(k => [k, duJour(evs, k)]).filter(([, l]) => l.length);
+    if (!blocs.length) return { evs, html: '<p class="ag-vide">Aucun événement sur ces 30 jours.</p>' };
+    return { evs, html: `<div class="ag-vliste">${blocs.map(([k, liste]) => `<section class="ag-ljour${k === auj ? ' aujourdhui' : ''}" aria-labelledby="l-${k}">
+      <div class="ag-ldate">${enteteJour(k, 'l')}<span class="ag-lmois" aria-hidden="true">${esc(moisNom(k))}</span></div>
+      <ul class="ag-lignes">${liste.map(ev => {
+        const d = ev.Dossier && dossier(ev.Dossier);
+        const fin = !ev.Journee_entiere && ev.Fin && ev.Fin > ev.Debut && cleDepuisEpoch(ev.Fin) === k ? ` – ${heure(ev.Fin)}` : '';
+        return `<li><button type="button" class="${classes(ev)} ag-ligne-evt" style="--c:${couleur(ev)}" data-action="ag-voir" data-id="${ev.id}">
+          <span class="ag-heure">${esc(quandCourt(ev, k) + (ev.Debut >= debutJour(k) ? fin : ''))}${estEcheance(ev) ? ' <span class="ag-etiquette">Échéance</span>' : ''}</span>
+          <span class="ag-lcorps"><span class="ag-evt-titre">${esc(titreAffiche(ev))}</span>${etatLu(ev)}
+          <span class="ag-evt-src">${esc(nomSource(ev))}${ev.Lieu ? ' · ' + esc(ev.Lieu) : ''}${d ? ' · Dossier : ' + esc(d.Titre || d.Lien) : ''}</span></span></button></li>`;
+      }).join('')}</ul></section>`).join('')}</div>` };
+  }
+
+  // ------------------------------------------------------------------ quoi de neuf depuis la dernière visite
+  // Dernière visite : la connexion précédente de ce compte (table Connexions). Les changements faits par le compte
+  // lui-même ne sont pas signalés ; seuls comptent les événements à venir.
+  function nouveautes() {
+    const m = e.moi;
+    const prec = Math.max(0, ...(e.doc.Connexions || []).filter(c => c.Email === m.email && c.id !== m.ligne).map(c => c.Le || 0));
+    const t = Math.floor(Date.now() / 1000);
+    const avenir = (e.doc.Evenements || []).filter(ev => typeof ev.Debut === 'number' && Math.max(ev.Fin || ev.Debut, ev.Debut) >= t);
+    const echeances = avenir.filter(ev => estEcheance(ev) && !ev.Statut && ev.Debut <= t + 7 * 86400).sort((x, y) => x.Debut - y.Debut);
+    if (!prec) return { prec, nouveaux: [], modifies: [], annules: [], echeances };
+    const parAutre = (ev, champ) => (ev[champ] || '') !== m.email;
+    const nouveaux = avenir.filter(ev => (ev.Cree_le || 0) > prec && !ev.Statut && parAutre(ev, 'Cree_par'));
+    const modifies = avenir.filter(ev => (ev.Cree_le || 0) <= prec && (ev.Modifie_le || 0) > prec && !ev.Statut && parAutre(ev, 'Modifie_par'));
+    const annules = avenir.filter(ev => ev.Statut && (ev.Modifie_le || 0) > prec && parAutre(ev, 'Modifie_par'));
+    const tri = l => l.sort((x, y) => (y.Dossier ? 1 : 0) - (x.Dossier ? 1 : 0) || x.Debut - y.Debut);
+    return { prec, nouveaux: tri(nouveaux), modifies: tri(modifies), annules: tri(annules), echeances };
+  }
+  const F_COURT = new Intl.DateTimeFormat('fr-FR', { timeZone: TZ, weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  function groupe(titre, liste, cle) {
+    if (!liste.length) return '';
+    return `<div class="ag-nv-groupe" data-groupe="${cle}"><h4>${esc(titre)} <span class="discret">(${liste.length})</span></h4><ul>${liste.slice(0, 8).map(ev => {
+      const d = ev.Dossier && dossier(ev.Dossier);
+      return `<li><span class="ag-pastille" style="--c:${couleur(ev)}" aria-hidden="true"></span><button type="button" class="btn lien" data-action="ag-voir" data-id="${ev.id}">${esc(F_COURT.format(new Date(ev.Debut * 1000)))} — ${esc(titreAffiche(ev))}</button>${d ? ` <span class="discret petit">· ${esc(d.Titre || '')}</span>` : ''}</li>`;
+    }).join('')}</ul>${liste.length > 8 ? `<p class="discret petit">et ${liste.length - 8} autre${liste.length > 9 ? 's' : ''}.</p>` : ''}</div>`;
+  }
+  function panneauNouveautes() {
+    const n = nouveautes();
+    const total = n.nouveaux.length + n.modifies.length + n.annules.length;
+    if (!n.prec && !n.echeances.length) return '';
+    const parts = [];
+    if (n.prec) parts.push(total ? `${[n.nouveaux.length && `${n.nouveaux.length} nouveau${n.nouveaux.length > 1 ? 'x' : ''}`, n.modifies.length && `${n.modifies.length} modifié${n.modifies.length > 1 ? 's' : ''}`, n.annules.length && `${n.annules.length} annulé${n.annules.length > 1 ? 's' : ''} ou retiré${n.annules.length > 1 ? 's' : ''}`].filter(Boolean).join(', ')} depuis votre dernière visite (${F_COURT.format(new Date(n.prec * 1000))})`
+      : `Rien de nouveau depuis votre dernière visite (${F_COURT.format(new Date(n.prec * 1000))})`);
+    if (n.echeances.length) parts.push(`${n.echeances.length} échéance${n.echeances.length > 1 ? 's' : ''} dans les 7 jours`);
+    const detail = total || n.echeances.length;
+    return `<details class="ag-nouveautes${total ? ' avec' : ''}" id="nouveautes">
+      <summary><span class="ag-nv-titre">Quoi de neuf</span> <span class="ag-nv-resume" data-nouveautes="${total}">${esc(parts.join(' · '))}.</span></summary>
+      ${detail ? `<div class="ag-nv-corps">${groupe('Échéances des 7 prochains jours', n.echeances, 'echeances')}${groupe('Nouveaux', n.nouveaux, 'nouveaux')}${groupe('Modifiés (horaire, lieu, contenu…)', n.modifies, 'modifies')}${groupe('Annulés ou retirés', n.annules, 'annules')}</div>` : ''}
+    </details>`;
+  }
+
   A.vues.agenda = {
     rendre() {
       const a = arg();
-      const { evs, html } = a.mode === 'mois' ? vueMois(a) : vueSemaine(a);
-      // Agendas présents sur la période (et ceux masqués, pour pouvoir les réafficher)
+      const { evs, html } = a.mode === 'mois' ? vueMois(a) : a.mode === 'liste' ? vueListe(a) : vueSemaine(a);
+      // Agendas présents (et ceux masqués, pour pouvoir les réafficher)
       const tous = evenementsEntre(-Infinity, Infinity, { ...a, masques: [], dossier: a.dossier });
       const ids = [...new Set([...tous.map(ev => ev.Source), ...a.masques])].filter(Boolean);
       const visibles = ids.map(source).filter(Boolean).sort((x, y) => x.Nom.localeCompare(y.Nom, 'fr'));
       const d = a.dossier && dossier(a.dossier);
-      const unite = a.mode === 'mois' ? 'Mois' : 'Semaine';
+      const unite = { mois: ['Mois', 'précédent', 'suivant'], liste: ['30 jours', 'précédents', 'suivants'], semaine: ['Semaine', 'précédente', 'suivante'] }[a.mode];
       return `<div class="ag">
         <h2 class="sr-only">Agenda</h2>
         <div class="ag-barre">
           <div class="ag-nav">
-            <button type="button" class="btn secondaire petit" data-action="ag-decaler" data-pas="-1"><span aria-hidden="true">‹</span><span class="sr-only">${unite} précédent${a.mode === 'mois' ? '' : 'e'}</span></button>
-            <button type="button" class="btn secondaire petit" data-action="ag-auj">Aujourd’hui</button>
-            <button type="button" class="btn secondaire petit" data-action="ag-decaler" data-pas="1"><span aria-hidden="true">›</span><span class="sr-only">${unite} suivant${a.mode === 'mois' ? '' : 'e'}</span></button>
+            <div class="ag-groupe-nav">
+              <button type="button" data-action="ag-decaler" data-pas="-1"><span aria-hidden="true">‹</span><span class="sr-only">${unite[0]} ${unite[1]}</span></button>
+              <button type="button" data-action="ag-auj">Aujourd’hui</button>
+              <button type="button" data-action="ag-decaler" data-pas="1"><span aria-hidden="true">›</span><span class="sr-only">${unite[0]} ${unite[2]}</span></button>
+            </div>
             <p class="ag-titre" aria-live="polite">${esc(titrePeriode(a.mode, a.date))}</p>
           </div>
           <div class="ag-outils">
             <div class="ag-modes" role="group" aria-label="Affichage">
-              <button type="button" data-action="ag-mode" data-mode="semaine" aria-pressed="${a.mode === 'semaine'}">Semaine</button>
-              <button type="button" data-action="ag-mode" data-mode="mois" aria-pressed="${a.mode === 'mois'}">Mois</button>
+              ${[['semaine', 'Semaine'], ['mois', 'Mois'], ['liste', 'Liste']].map(([m, l]) => `<button type="button" data-action="ag-mode" data-mode="${m}" aria-pressed="${a.mode === m}">${l}</button>`).join('')}
             </div>
             <button type="button" class="btn" data-action="ag-nouveau">Nouvel événement</button>
           </div>
         </div>
+        ${panneauNouveautes()}
         ${d ? `<p class="note">Seuls les événements du dossier « ${esc(d.Titre || d.Lien)} » sont affichés. <button type="button" class="btn lien" data-action="ag-sans-dossier">Afficher tout l’agenda</button></p>` : ''}
         <div class="ag-filtres">
           ${visibles.length ? `<div class="ag-agendas" role="group" aria-label="Agendas affichés">${visibles.map(s => `<button type="button" class="ag-chip" data-action="ag-filtre" data-cle="${s.id}" aria-pressed="${!a.masques.includes(s.id)}" style="--c:${/^#[0-9a-f]{6}$/i.test(s.Couleur || '') ? s.Couleur : '#15803D'}"><span class="ag-pastille" aria-hidden="true"></span>${esc(s.Nom)}</button>`).join('')}</div>` : ''}
-          <label class="ag-case"><input type="checkbox" data-change="ag-annules"${a.annules ? ' checked' : ''}> Afficher les événements annulés</label>
+          <label class="ag-case"><input type="checkbox" data-change="ag-annules"${a.annules ? ' checked' : ''}> Annulés</label>
+          <p class="ag-synchro petit" data-etat-synchro>${Y.htmlEtat()}</p>
         </div>
-        <p class="ag-synchro petit" data-etat-synchro>${Y.htmlEtat()}</p>
         ${html}
         <p class="discret petit">${evs.length} événement${evs.length > 1 ? 's' : ''} sur la période.</p>
       </div>`;
@@ -148,7 +235,7 @@
   const allerAgenda = maj => A.aller('agenda', Object.assign({}, arg(), maj));
   A.actions['ag-decaler'] = el => {
     const a = arg(), pas = Number(el.dataset.pas);
-    allerAgenda({ date: a.mode === 'mois' ? moisSuivant(premierDuMois(a.date), pas) : ajouterJours(lundi(a.date), 7 * pas) });
+    allerAgenda({ date: a.mode === 'mois' ? moisSuivant(premierDuMois(a.date), pas) : a.mode === 'liste' ? ajouterJours(a.date, JOURS_LISTE * pas) : ajouterJours(lundi(a.date), 7 * pas) });
   };
   A.actions['ag-auj'] = () => allerAgenda({ date: aujourdhui() });
   A.actions['ag-mode'] = el => allerAgenda({ mode: el.dataset.mode });

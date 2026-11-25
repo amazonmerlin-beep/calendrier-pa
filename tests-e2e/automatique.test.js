@@ -108,3 +108,25 @@ test('un membre cherche « budget 2027 » sans quitter Grist et suit le dossier 
     await m.waitForSelector('#rech-resultats [data-etat="suivi"]');
   } finally { await nav.b.close(); }
 });
+
+test('délais limites de dépôt des amendements : ceux du dossier suivi arrivent dans l’agenda, comme échéances', async () => {
+  const sortie = await relais();
+  const m = /Délais limites : (\d+) \(amendements\) dans (\d+) séances publiques, dont (\d+) de dossiers suivis/.exec(sortie);
+  assert.ok(m, sortie);
+  const src = (await proprio.lignes(DOC, 'Sources', { filtre: { Nom: ['Délais limites du Sénat'] } }))[0];
+  assert.equal(src.Active, false, 'source non suivie : seulement les délais des dossiers suivis');
+  const dossier = (await proprio.lignes(DOC, 'Dossiers')).find(x => /pjlf2027/.test(x.Lien));
+  const delais = (await proprio.lignes(DOC, 'Evenements')).filter(e => e.Source === src.id);
+  if (+m[3] === 0) return; // aucune séance du budget avec délai à venir : rien à vérifier de plus
+  assert.ok(delais.length > 0 && delais.every(e => e.Dossier === dossier.id), 'tous rattachés au dossier suivi');
+  assert.ok(delais.every(e => /^Délai : (Dépôt des amendements|Sous-amendements|Ajout de signataires)/.test(e.Titre)), delais.map(e => e.Titre).join(' | '));
+  const nav = await navigateur({ largeur: 1440, hauteur: 960 });
+  try {
+    const ctx = await nav.nouveau();
+    const { page, module: mod } = await ouvrir(ctx, 'membre@projet.test', 'Membre');
+    await cliquer(mod, '[data-action="ag-mode"][data-mode="liste"]');
+    await mod.waitForSelector('.ag-vliste .ag-echeance');
+    assert.match(await mod.$eval('.ag-vliste .ag-echeance', el => el.textContent), /Échéance/);
+    await capturer(page, '19-echeances');
+  } finally { await nav.b.close(); }
+});

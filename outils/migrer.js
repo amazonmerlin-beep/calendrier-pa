@@ -31,7 +31,16 @@ function infoColonne(c) {
   const nouvellesColonnes = TABLES.filter(t => existe(t.id)).flatMap(t => t.colonnes.filter(c => !existe(t.id, c.id)).map(c => [t, c]));
   const enTrop = [...new Set(meta.filter(m => !m.tableId.startsWith('_grist') && !m.colId.startsWith('gristHelper') && m.colId !== 'manualSort'
     && TABLES.some(t => t.id === m.tableId) && !TABLES.find(t => t.id === m.tableId).colonnes.some(c => c.id === m.colId)).map(m => `${m.tableId}.${m.colId}`))];
+  // Données de base ajoutées depuis la construction (ex. une nouvelle source), repérées par leur Nom
+  const lignesManquantes = [];
+  for (const [table, lignes] of Object.entries(DONNEES)) {
+    if (!existe(table) || !lignes.length || !('Nom' in lignes[0])) continue;
+    const noms = new Set((await g.sql(doc, `select Nom from ${table}`)).map(r => r.Nom));
+    const manque = lignes.filter(l => !noms.has(l.Nom));
+    if (manque.length) lignesManquantes.push([table, manque]);
+  }
   console.log(`Tables à créer : ${nouvellesTables.map(t => t.id).join(', ') || 'aucune'}`);
+  console.log(`Lignes de base à ajouter : ${lignesManquantes.map(([t, l]) => `${t} (${l.map(x => x.Nom).join(', ')})`).join(' ; ') || 'aucune'}`);
   console.log(`Colonnes à ajouter : ${nouvellesColonnes.map(([t, c]) => `${t.id}.${c.id}`).join(', ') || 'aucune'}`);
   if (enTrop.length) console.log(`Colonnes absentes du schéma (gardées) : ${enTrop.join(', ')}`);
   if (SIMULATION) { console.log('Simulation : rien n’est écrit.'); return; }
@@ -70,7 +79,9 @@ function infoColonne(c) {
   // 4. Pages créées par Grist avec les nouvelles tables : retirées (le module est la seule page)
   const vuesNouvelles = (await g.sql(doc, 'select id from _grist_Views')).filter(v => !vuesAvant.has(v.id));
   if (vuesNouvelles.length) await g.appliquer(doc, vuesNouvelles.map(v => ['RemoveView', v.id]));
-  // 5. Règles d'accès du schéma (remplacent celles du document)
+  // 5. Lignes de base manquantes
+  for (const [table, lignes] of lignesManquantes) await g.ajouter(doc, table, lignes);
+  // 6. Règles d'accès du schéma (remplacent celles du document)
   const acl = await appliquerRegles(g, doc);
   console.log(`Migration faite : ${nouvellesTables.length} table(s), ${aAjouter.length} colonne(s) ; règles : ${acl.ressources} ressources, ${acl.regles} règles, toutes compilées.`);
 })().catch(e => { console.error('ÉCHEC :', e.message); if (e.corps) console.error(JSON.stringify(e.corps).slice(0, 2000)); process.exit(1); });

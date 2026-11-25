@@ -188,3 +188,13 @@ test('plan -> actions Grist en un lot', () => {
   assert.deepEqual(ajout[3].Source, [3, 3]);
   assert.match(S.resumer(p.stats), /^2 événements retenus · 2 ajoutés$/);
 });
+
+test('plan : rattachement à un dossier rendu par la source, jamais effacé s’il a été posé à la main', () => {
+  const a = it('a', 25, 'A', { dossier: 7 }), b = it('b', 26, 'B');
+  const t = [
+    { id: 1, UID: 'a', Debut: a.debut, Notes: '', Empreinte: S.empreinteItem(a), Dossier: 0 },
+    { id: 2, UID: 'b', Debut: b.debut, Notes: '', Empreinte: S.empreinteItem(b), Dossier: 9 },
+  ];
+  const p = S.planifier({ sourceId: 3, items: [a, b], existants: t, maintenant: MAINTENANT, mode: 'flux', flux: { nombre: 2, horizon: b.debut } });
+  assert.deepEqual(p.modifs.map(m => [m.id, m.champs.Dossier]), [[1, 7]], 'lien rétabli pour a ; b garde son rattachement manuel');
+});

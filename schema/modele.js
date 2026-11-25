@@ -16,6 +16,7 @@ const GROUPES = ['Sénat – Séance publique', 'Sénat – Commissions', 'Séna
 const STATUTS_EVT = ['Annulé', 'Retiré de la source'];
 const ETATS_DOSSIER = ['À analyser', 'Suivi actif', 'En attente du relais', 'Erreur'];
 const SYNC_AUTEUR = 'Synchronisation automatique';
+const STATUTS_DEMANDE = ['En attente', 'Acceptée', 'Refusée'];
 // Diffusion vers des agendas extérieurs : niveau de détail d'un abonnement, et exclusion d'un événement
 const NIVEAUX_DIFFUSION = ['Titres et horaires', 'Avec lieu et description', 'Avec notes internes'];
 const DIFFUSION_EVT = ['Interne'];
@@ -148,6 +149,20 @@ const TABLES = [
     ],
   },
   {
+    // Demandes d'accès (document partagé par lien) : écrites par la personne, traitées par l'administration.
+    // Jamais dans l'annuaire : toute écriture dans l'annuaire recharge le document de tous.
+    id: 'Demandes',
+    colonnes: [
+      { id: 'Email', type: 'Text', label: 'Adresse', formule: 'user.Email', declencheur: 'ajout' },
+      { id: 'Nom', type: 'Text', label: 'Nom', formule: 'user.Name', declencheur: 'ajout' },
+      { id: 'Le', type: TZ, label: 'Demandée le', formule: 'NOW()', declencheur: 'ajout', options: DATETIME },
+      { id: 'Message', type: 'Text', label: 'Message', options: { wrap: true } },
+      { id: 'Statut', type: 'Choice', label: 'Statut', options: { choices: STATUTS_DEMANDE } },
+      { id: 'Traite_par', type: 'Text', label: 'Traitée par' },
+      { id: 'Traite_le', type: TZ, label: 'Traitée le', options: DATETIME },
+    ],
+  },
+  {
     // Guides de l'onglet Aide : chaque rôle ne lit que ceux de son public (règles d'accès)
     id: 'Guides',
     colonnes: [
@@ -174,4 +189,4 @@ const PARAMETRES = [
 // Données de base, posées à la construction (avant les déclencheurs)
 const DONNEES = { Sources: SOURCES };
 
-module.exports = { TABLES, PARAMETRES, DONNEES, ROLES, TYPES_SOURCE, STATUTS_EVT, ETATS_DOSSIER, SYNC_AUTEUR, NIVEAUX_DIFFUSION, DIFFUSION_EVT };
+module.exports = { TABLES, PARAMETRES, DONNEES, ROLES, TYPES_SOURCE, STATUTS_EVT, ETATS_DOSSIER, SYNC_AUTEUR, NIVEAUX_DIFFUSION, DIFFUSION_EVT, STATUTS_DEMANDE };

@@ -30,6 +30,8 @@ const AN_AGENDA = 'https://data.assemblee-nationale.fr/static/openData/repositor
 const AN_DOSSIERS = 'https://data.assemblee-nationale.fr/static/openData/repository/17/loi/dossiers_legislatifs/Dossiers_Legislatifs.json.zip';
 const SENAT_DOSSIERS = 'https://data.senat.fr/data/dosleg/dossiers-legislatifs.csv';
 const SOURCE_AN = 'Assemblée nationale (dossiers suivis)';
+const SOURCE_DELAIS = 'Délais limites du Sénat';
+const API_SENAT = 'https://www.senat.fr/api/v1/agenda';
 const UA = 'calendrier-pa-relais/1.0 (+https://github.com)';
 const MAX_ICS = 2 * 1024 * 1024;   // un contenu relayé de plus de 2 Mo est refusé (cellule Grist raisonnable)
 const GIST_TOKEN = process.env.GIST_TOKEN || '';
@@ -121,6 +123,71 @@ function ics(nom, evenements) {
   }
   l.push('END:VCALENDAR');
   return l.map(plier).join('\r\n') + '\r\n';
+}
+
+// ------------------------------------------------------------------ délais limites (séance publique du Sénat)
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+/** « Jeudi 26 novembre 2026 11h00 » (heure de Paris) -> date ISO, ou null */
+function dateSenat(texte) {
+  const m = /(\d{1,2})(?:er)?\s+([a-zéû]+)\s+(\d{4})(?:\s+(?:à\s+)?(\d{1,2})\s*h\s*(\d{2})?)?/i.exec(String(texte || '').replace(/\u00a0/g, ' '));
+  const mo = m ? MOIS.indexOf(m[2].toLowerCase()) + 1 : 0;
+  if (!m || !mo) return null;
+  return new Date(S.versEpoch(+m[3], mo, +m[1], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0, 0) * 1000).toISOString();
+}
+const empreinte = s => { let h = 5381; for (const c of s) h = ((h << 5) + h + c.codePointAt(0)) >>> 0; return h.toString(36); };
+function libelleDelai(titre) {
+  const [quoi, objet] = String(titre).split(/<br\s*\/?>/i).map(x => S.sansBalises(x));
+  const court = /sous-amendement/i.test(quoi) ? 'Sous-amendements' : /dépôt des amendements/i.test(quoi) ? 'Dépôt des amendements'
+    : /signataire/i.test(quoi) ? 'Ajout de signataires' : quoi.replace(/^délai limite pour (?:le |la |les |l’|l')?/i, '');
+  return { court: court.charAt(0).toUpperCase() + court.slice(1), objet: objet || '', complet: [quoi, objet].filter(Boolean).join(' : ') };
+}
+async function jsonSenat(chemin) {
+  const r = await fetch(`${API_SENAT}${chemin}`, { headers: { 'User-Agent': UA, Accept: 'application/json' } });
+  if (!r.ok) throw new Error(`API de l’agenda du Sénat : erreur ${r.status}`);
+  return r.json();
+}
+/**
+ * Délais limites liés aux amendements (dépôt, sous-amendements, signataires) des séances publiques des cinq semaines
+ * à venir, chacun rattaché au dossier suivi dont la séance parle (lien du dossier ou numéro de texte).
+ */
+async function delaisSenat(dossiers) {
+  const jour = sec => { const p = S.partiesParis(sec); return `${p.annee}-${String(p.mois).padStart(2, '0')}-${String(p.jour).padStart(2, '0')}`; };
+  const t = maintenant(), aujourdhui = jour(t);
+  const seances = new Map();
+  for (let k = 0; k < 5; k++) {
+    const semaine = await jsonSenat(`/events?date=${jour(t + k * 7 * 86400)}&week=1`);
+    for (const j of Object.values(semaine || {})) for (const e of j.events || []) {
+      if (j.day >= aujourdhui && (e.instances || []).includes('Séance publique')) seances.set(e.id, e);
+    }
+  }
+  // Dossiers suivis du Sénat : par chemin (pjlf2027) et par numéro de texte
+  const parChemin = new Map(), parNumero = new Map();
+  for (const d of dossiers.filter(x => x.Etat !== 'Erreur')) {
+    for (const l of [d.Lien, d.Lien_autre]) { const c = (/\/dossier-legislatif\/([^/"#?]+)\.html/.exec(l || '') || [])[1]; if (c) parChemin.set(c, d.id); }
+    for (const k of S.numerosSenat(d.Numeros)) parNumero.set(k, d.id);
+  }
+  const delais = new Map();
+  for (const [id, e] of seances) {
+    const detail = await jsonSenat(`/events/${id}`);
+    const contenu = String(detail.content || '');
+    const dossier = [...contenu.matchAll(/\/dossier-legislatif\/([^/"#?]+)\.html/g)].map(m => parChemin.get(m[1])).find(Boolean)
+      || S.numerosSenat(S.sansBalises(contenu)).map(k => parNumero.get(k)).find(Boolean) || null;
+    for (const dl of detail.deadlines || []) {
+      if (!/amendement|signataire/i.test(dl.title || '')) continue;
+      const debut = dateSenat(dl.date);
+      if (!debut || debut < new Date((t - 86400) * 1000).toISOString()) continue;
+      const { court, objet, complet } = libelleDelai(dl.title);
+      const cle = `${court}|${objet}|${debut}`;
+      if (delais.has(cle)) { if (!delais.get(cle).dossier && dossier) delais.get(cle).dossier = dossier; continue; }
+      const p = S.partiesParis(Date.parse(e.date + 'T12:00:00Z') / 1000);
+      delais.set(cle, {
+        uid: `delai-${empreinte(cle)}@calendrier-pa`, debut, fin: debut, titre: `Délai : ${court}${objet ? ' – ' + objet : ''}`,
+        description: `${complet}\nSéance concernée : ${S.sansBalises(e.title)} (${e.date})`,
+        url: `https://agenda.senat.fr/${p.annee}/${String(p.mois).padStart(2, '0')}/${String(p.jour).padStart(2, '0')}/event/${id}`, dossier,
+      });
+    }
+  }
+  return { seances: seances.size, delais: [...delais.values()].sort((a, b) => a.debut.localeCompare(b.debut) || a.uid.localeCompare(b.uid)) };
 }
 
 // ------------------------------------------------------------------ 1. relais
@@ -241,6 +308,20 @@ async function relayer(sources, dossiers) {
     }
   } else if (!aSuivre.length) console.log('Aucun dossier de l’Assemblée nationale à suivre.');
   for (const [id, f] of majDossiers) actions.push(['UpdateRecord', 'Dossiers', id, f]);
+  // Délais limites de la séance publique : tous si la source est suivie, sinon seulement ceux des dossiers suivis
+  const cibleDelais = sources.find(s => s.Nom === SOURCE_DELAIS && s.Type === 'Flux via relais');
+  if (cibleDelais && (cibleDelais.Active || dossiers.some(d => d.Etat !== 'Erreur'))) {
+    try {
+      const { seances, delais } = await delaisSenat(dossiers.map(d => (majDossiers.has(d.id) ? { ...d, ...majDossiers.get(d.id) } : d)));
+      noter(cibleDelais, ics(SOURCE_DELAIS, delais));
+      console.log(`Délais limites : ${delais.length} (amendements) dans ${seances} séances publiques, dont ${delais.filter(x => x.dossier).length} de dossiers suivis.`);
+    } catch (e) {
+      echecs.set(cibleDelais.id, e.message);
+      actions.push(['UpdateRecord', 'Sources', cibleDelais.id, { Resultat_synchro: '⚠ Relais : ' + e.message, Relaye_le: t }]);
+      console.error('Délais limites : ' + e.message);
+      enEchec = true;
+    }
+  }
   return { contenus, echecs, actions, dossiers: dossiers.map(d => (majDossiers.has(d.id) ? { ...d, ...majDossiers.get(d.id) } : d)) };
 }
 

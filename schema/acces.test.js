@@ -83,3 +83,11 @@ test('modèle : colonnes réservées ramenées à leur défaut lors d’un dép�
     assert.match(c.formule, /^\S.* if user\.ShareRef else (value|\(value or .+\))$/, `${t}.${c.id} : ${c.formule}`);
   }
 });
+
+test('règles : aucune condition vide sur la ressource par défaut (*) ni sur les règles spéciales', () => {
+  // La page « Règles d'accès » de Grist ajoute ses règles intégrées après celles de '*' : une condition vide n'y est
+  // plus la dernière et la page refuse d'enregistrer (« La condition ne peut pas être vide »)
+  for (const j of jeux().filter(x => x.table === '*' || x.table === '*SPECIAL')) {
+    for (const [f, p] of j.regles) assert.ok(f, `${j.table} ${j.colonnes} : condition vide (${p})`);
+  }
+});

@@ -32,6 +32,14 @@
   "Couleur": "#B42318"
  },
  {
+  "Nom": "Délais limites du Sénat",
+  "Groupe": "Sénat – Séance publique",
+  "Type": "Flux via relais",
+  "URL": "",
+  "Active": false,
+  "Couleur": "#B45309"
+ },
+ {
   "Nom": "Commission de la culture",
   "Groupe": "Sénat – Commissions",
   "Type": "Flux iCal",

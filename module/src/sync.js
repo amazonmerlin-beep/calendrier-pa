@@ -332,10 +332,14 @@
         continue;
       }
       if (r.Empreinte === fp) {
-        if (r.Statut === STATUT_RETIRE) {
-          const c = { Statut: it.annule ? STATUT_ANNULE : null };
+        const c = {};
+        if (r.Statut === STATUT_RETIRE) { c.Statut = it.annule ? STATUT_ANNULE : null; st.retablis++; }
+        // Rattachement perdu (dossier retiré puis suivi de nouveau) : la source le redonne ; un rattachement posé à la
+        // main sur un événement que la source ne rattache pas n'est jamais effacé
+        if (it.dossier && it.dossier !== r.Dossier) c.Dossier = it.dossier;
+        if (Object.keys(c).length) {
           if (estFlux) c.Modifie_par = SYNC_AUTEUR;
-          modifs.push({ id: r.id, champs: c }); st.retablis++;
+          modifs.push({ id: r.id, champs: c });
         } else st.inchanges++;
         continue;
       }
